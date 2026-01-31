@@ -36,12 +36,12 @@ OmniverseAudioProcessorEditor::~OmniverseAudioProcessorEditor()
 void OmniverseAudioProcessorEditor::setupHeader()
 {
     titleLabel.setText("omniverse", juce::dontSendNotification);
-    titleLabel.setFont(juce::Font(28.0f, juce::Font::bold));
+    titleLabel.setFont(OmniverseLookAndFeel::getTitleFont(42.0f));
     titleLabel.setColour(juce::Label::textColourId, juce::Colours::white);
     addAndMakeVisible(titleLabel);
 
     versionLabel.setText("v1.0.0", juce::dontSendNotification);
-    versionLabel.setFont(juce::Font(12.0f));
+    versionLabel.setFont(OmniverseLookAndFeel::getBodyFont(10.0f));
     versionLabel.setColour(juce::Label::textColourId, juce::Colours::grey);
     addAndMakeVisible(versionLabel);
 }
@@ -172,10 +172,10 @@ void OmniverseAudioProcessorEditor::resized()
     // Header area (60px)
     auto headerArea = bounds.removeFromTop(60);
 
-    // Title and version stacked
-    auto titleArea = headerArea.removeFromLeft(120);
-    titleLabel.setBounds(titleArea.getX() + 15, 10, 100, 30);
-    versionLabel.setBounds(titleArea.getX() + 18, 38, 50, 15);
+    // Title and version stacked - larger title area
+    auto titleArea = headerArea.removeFromLeft(200);
+    titleLabel.setBounds(titleArea.getX() + 15, 5, 180, 45);
+    versionLabel.setBounds(titleArea.getX() + 18, 48, 50, 12);
 
     // Tabs (with some spacing from title)
     headerArea.removeFromLeft(10);

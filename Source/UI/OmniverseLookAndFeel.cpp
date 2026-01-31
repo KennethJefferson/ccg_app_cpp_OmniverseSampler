@@ -80,7 +80,7 @@ void OmniverseLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButto
     if (shouldDrawButtonAsHighlighted)
         g.setColour(textColour);
 
-    g.setFont(12.0f);
+    g.setFont(getBodyFont(12.0f));
     g.drawText(button.getButtonText(), bounds.reduced(4, 0), juce::Justification::centredLeft);
 }
 
@@ -107,10 +107,35 @@ void OmniverseLookAndFeel::drawButtonBackground(juce::Graphics& g, juce::Button&
 
 juce::Font OmniverseLookAndFeel::getTextButtonFont(juce::TextButton&, int /*buttonHeight*/)
 {
-    return juce::Font(12.0f);
+    return getBodyFont(12.0f);
 }
 
 juce::Font OmniverseLookAndFeel::getLabelFont(juce::Label& /*label*/)
 {
-    return juce::Font(11.0f);
+    return getBodyFont(11.0f);
+}
+
+juce::Font OmniverseLookAndFeel::getComboBoxFont(juce::ComboBox&)
+{
+    return getBodyFont(12.0f);
+}
+
+juce::Font OmniverseLookAndFeel::getPopupMenuFont()
+{
+    return getBodyFont(12.0f);
+}
+
+juce::Font OmniverseLookAndFeel::getTitleFont(float height)
+{
+    return juce::Font(fontName, height, juce::Font::plain);
+}
+
+juce::Font OmniverseLookAndFeel::getBodyFont(float height)
+{
+    return juce::Font(fontName, height, juce::Font::plain);
+}
+
+juce::Font OmniverseLookAndFeel::getBoldFont(float height)
+{
+    return juce::Font(fontName, height, juce::Font::bold);
 }

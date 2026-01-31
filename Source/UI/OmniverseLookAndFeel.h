@@ -22,6 +22,15 @@ public:
 
     juce::Font getTextButtonFont(juce::TextButton&, int buttonHeight) override;
     juce::Font getLabelFont(juce::Label& label) override;
+    juce::Font getComboBoxFont(juce::ComboBox&) override;
+    juce::Font getPopupMenuFont() override;
+
+    // Get fonts for different purposes
+    static juce::Font getTitleFont(float height = 42.0f);
+    static juce::Font getBodyFont(float height = 11.0f);
+    static juce::Font getBoldFont(float height = 12.0f);
+
+    static inline const juce::String fontName = "TX-02";
 
 private:
     juce::Colour accentColour { 0xFF8B5CF6 };      // Violet/Purple primary
