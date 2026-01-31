@@ -35,13 +35,13 @@ OmniverseAudioProcessorEditor::~OmniverseAudioProcessorEditor()
 
 void OmniverseAudioProcessorEditor::setupHeader()
 {
-    titleLabel.setText("omniverse", juce::dontSendNotification);
-    titleLabel.setFont(OmniverseLookAndFeel::getTitleFont(42.0f));
+    titleLabel.setText("Omniverse", juce::dontSendNotification);
+    titleLabel.setFont(OmniverseLookAndFeel::getTitleFont(48.0f));
     titleLabel.setColour(juce::Label::textColourId, juce::Colours::white);
     addAndMakeVisible(titleLabel);
 
     versionLabel.setText("v1.0.0", juce::dontSendNotification);
-    versionLabel.setFont(OmniverseLookAndFeel::getBodyFont(10.0f));
+    versionLabel.setFont(OmniverseLookAndFeel::getBodyFont(14.0f));
     versionLabel.setColour(juce::Label::textColourId, juce::Colours::grey);
     addAndMakeVisible(versionLabel);
 }

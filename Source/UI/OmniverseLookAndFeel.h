@@ -25,10 +25,10 @@ public:
     juce::Font getComboBoxFont(juce::ComboBox&) override;
     juce::Font getPopupMenuFont() override;
 
-    // Get fonts for different purposes
-    static juce::Font getTitleFont(float height = 42.0f);
-    static juce::Font getBodyFont(float height = 11.0f);
-    static juce::Font getBoldFont(float height = 12.0f);
+    // Get fonts for different purposes (sizes increased 50% from base)
+    static juce::Font getTitleFont(float height = 48.0f);
+    static juce::Font getBodyFont(float height = 16.0f);
+    static juce::Font getBoldFont(float height = 18.0f);
 
     static inline const juce::String fontName = "TX-02";
 
