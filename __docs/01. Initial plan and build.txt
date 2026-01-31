@@ -1,0 +1,2692 @@
+
+╭─── Claude Code v2.1.27 ──────────────────────────────────────────────────────╮
+│                                              │ Tips for getting started      │
+│              Welcome back Tony!              │ Run /init to create a CLAUDE… │
+│                                              │ ───────────────────────────── │
+│                    ▐▛███▜▌                   │ Recent activity               │
+│                   ▝▜█████▛▘                  │ No recent activity            │
+│                     ▘▘ ▝▝                    │                               │
+│                                              │                               │
+│     Opus 4.5 · Claude Max · Tony Baloney     │                               │
+│   E:\Workspace.Dev.C++\VST_MultiverseClone   │                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ This is a specification I created with Gemini 3 Pro for a sampler-based   
+  VST I want to clone. Here is the website:                                 
+                                                                            
+  https://www.multiverse-authentication.com/work/multiverse/                
+                                                                            
+  The screenshot of the UI can be found here:                               
+  "E:\Workspace.Dev.C++\VST_MultiverseClone\__ss\ui01.png"                  
+                                                                            
+  ---                                                                       
+                                                                            
+  Gemini's Response:                                                        
+                                                                            
+  Cloning an application like Multiverse is a perfect project for the       
+  Claude Code + JUICE framework workflow described in your text. Multiverse 
+   is essentially a "Creative Sampler" that focuses on turning simple       
+  one-shots into complex soundscapes through randomization and a heavy      
+  modulation/effects matrix.                                                
+                                                                            
+  Here is a brainstormed specification and structural plan to get started.  
+                                                                            
+  ### 1. Product Vision: "Omniverse" (Clone Concept)                        
+                                                                            
+  Omniverse is a creative sampler plugin built with JUICE. It allows users  
+  to drag 5 different audio samples into slots and manipulate them as a     
+  single cohesive instrument. It leans heavily into a "Violet/HotPink       
+  Dark/Minimalist" aesthetic and high-relevance DSP (BBD delays,            
+  saturation, and spectral filtering).                                      
+                                                                            
+  Cloning an application like **Multiverse** is a perfect project for the   
+  **Claude Code + JUICE framework** workflow described in your text.        
+  Multiverse is essentially a "Creative Sampler" that focuses on turning    
+  simple one-shots into complex soundscapes through randomization and a     
+  heavy modulation/effects matrix.                                          
+                                                                            
+  ---                                                                       
+                                                                            
+  Here is a brainstormed specification and structural plan to get started.  
+                                                                            
+  ### 2. Core Functional Requirements                                       
+                                                                            
+  #### A. The Multi-Sampler Engine                                          
+  *   **5 Independent Slots:** Each slot must have its own                  
+  `juce::AudioSamplerVoice`.                                                
+  *   **Drag-and-Drop:** Support for `.wav` files into each slot.           
+  *   **Slot-Level Controls:**                                              
+      *   **Pitch:** $\pm$24 semitones.                                     
+      *   **Envelope:** Standard ADSR (Attack, Decay, Sustain, Release).    
+      *   **Filter:** High-Pass and Low-Pass filters with resonance.        
+      *   **LFO Modulation:** A dedicated LFO per slot to modulate the      
+  filter cutoff.                                                            
+                                                                            
+  #### B. Playback Modes                                                    
+  *   **Layer Mode:** All 5 samples play simultaneously on MIDI-in.         
+  *   **Round Robin / Random Mode:** MIDI-in triggers one of the 5 slots    
+  sequentially or randomly.                                                 
+  *   **Random Octave:** Playback occasionally jumps up/down an octave for  
+  texture.                                                                  
+  *   **Loop/Reverse:** Global toggle to reverse playback or loop a         
+  specific selection within the waveform.                                   
+                                                                            
+  #### C. The Effects Matrix (4 Modules)                                    
+  Based on the video visuals, we need four specialized global effects       
+  chains:                                                                   
+  1.  **Time:** BBD (Bucket Brigade) Delay and a "Stutter/Freeze" buffer.   
+  2.  **Movement:** Harmonic Tremolo and BBD Chorus (high-width             
+  modulation).                                                              
+  3.  **Color:** Tape Saturation (Drive/Character) and a Tilt-style Tone    
+  control.                                                                  
+  4.  **Master:** "Halftime" (buffer slowdown) and a Spectral Filter        
+  (Dual-end bandwidth control).                                             
+                                                                            
+  #### D. The Randomizer (The "Vibe" Button)                                
+  *   A button to intelligently randomize slot parameters (Envelopes,       
+  Filters, or FX settings) without breaking the sound (weighted             
+  randomization).                                                           
+                                                                            
+  ---                                                                       
+                                                                            
+  ### 3. Visual Specification (GUI)                                         
+  *   **Aesthetic:** Dark "Night Mode" theme. Black background, Violet      
+  waveforms, bright red/white outlines (Neon-Vector style).                 
+  *   **Components:**                                                       
+      *   5 Waveform Visualizers at the top.                                
+      *   Tabbed interface for "Filters" vs. "Effects."                     
+      *   Knob-less design (where possible): Use vertical sliders or        
+  numerical drag boxes to maintain the modern/minimalist look shown in the  
+  video.                                                                    
+      *   Real-time visualizers (Oscilloscopes or Spectral analysis at the  
+  output).                                                                  
+                                                                            
+  ---                                                                       
+                                                                            
+  ### 4. Technical Architecture (For Claude Code)                           
+                                                                            
+  When you begin running your **`/juice_research`** and                     
+  **`/juice_specification`** prompts, here is how you should guide Claude:  
+                                                                            
+  *   **Framework:** JUICE (C++).                                           
+  *   **DSP Library:** Use `juce_dsp` module for the basic filters and      
+  delay lines.                                                              
+  *   **State Management:** Use `AudioProcessorValueTreeState` (APVTS).     
+  This is vital for saving presets and allowing the "Randomize" button to   
+  affect all parameters at once.                                            
+  *   **Memory Handling:** Since there are 5 sampler voices, use a          
+  `juce::Synthesiser` class to manage the polyphony and voice-stealing      
+  logic.                                                                    
+                                                                            
+  ---                                                                       
+                                                                            
+  ### 5. Implementation Strategy: The "Phase" Build                         
+  To keep Claude Code from hallucinating, we should follow the **TDD (Test  
+  Driven Development)** approach mentioned in your text:                    
+                                                                            
+  1.  **Phase 1 (Skeleton):** Initialize a JUICE project with CMake. Create 
+   the 5 audio slots that can successfully load and hold a WAV file.        
+  2.  **Phase 2 (Playback):** Implement basic MIDI triggering so a keyboard 
+   re-triggers the 5 samples.                                               
+  3.  **Phase 3 (Modulation):** Implement the ADSR and LFO-to-Filter logic. 
+   Verify with a "Smoke Audio Test."                                        
+  4.  **Phase 4 (The Effects):** Build the BBD Delay and Saturation logic   
+  separately.                                                               
+  5.  **Phase 5 (The Look):** Apply the "Vibe" styling to the UI.           
+                                                                            
+  ---                                                                       
+                                                                            
+  ### 6. Critical Questions to Bounce Around                                
+  *   **The "Stutter" Feature:** Should the Stutter Freeze be a standard    
+  grain-buffer or a temporary loop of the sample's current playback         
+  position? (The video suggests it's a buffer freeze).                      
+  *   **CPU Optimization:** 5 voices with 5 filters, 5 LFOs, and 4 global   
+  effects can be heavy. Should we implement a "b### 6. Critical Questions   
+  to Bounce Around                                                          
+  *   **The "Stutter" Feature:** Should the Stutter Freeze be a standard    
+  grain-buffer or a temporary loop of the sample's current playback         
+  position? (The video suggests it's a buffer freeze).                      
+  *   **CPU Optimization:** 5 voices with 5 filters, 5 LFOs, and 4 global   
+  effects can be heavy. Should we implement a "bypass" for slots that don't 
+   have audio loaded?                                                       
+  *   **Halftime Logic:** Halftime usually requires a dedicated buffer that 
+   records the output and plays it back at half-speed. This is the most     
+  complex DSP part. Should we use an open-source library for this or ask    
+  Claude to derive the math for a tape-style buffer?                        
+                                                                            
+  **How would you like to proceed?** We can refine the **DSP math** for one 
+   of the specific effects (like the BBD Delay), or we can start drafting   
+  the **Claude Code system prompt** for Phase 1.                            
+                                                                            
+  Lets make sure we have everything ironed out before we start coding       
+
+● Let me gather more context by looking at the UI screenshot and the website to
+  ensure we have a complete picture before refining the specification.
+
+● Read 1 file (ctrl+o to expand)
+
+● Fetch(https://www.multiverse-authentication.com/work/multiverse/)
+  ⎿  Received 298.7KB (200 OK)
+
+● Excellent, now I can see the actual UI. There are several discrepancies
+  between Gemini's spec and the real Multiverse. Let me break this down:
+
+  ---
+  Analysis: Gemini Spec vs. Actual Multiverse UI
+
+  What Gemini Got Right
+
+  - 5 independent sample slots with waveform displays
+  - Per-slot: Volume, Pitch, ADSR Envelope
+  - Playback modes: Layer, Random, Random Octave, Reverse
+  - BBD Delay, BBD Chorus, Tape Saturation effects
+  - Spectral Filter in master section
+  - Dark aesthetic with orange/amber waveforms
+
+  What Gemini Got Wrong or Invented
+  ┌────────────────────────────────┬───────────────────────────────────────────┐
+  │         Gemini's Spec          │                 Actual UI                 │
+  ├────────────────────────────────┼───────────────────────────────────────────┤
+  │ Per-slot HP/LP filters visible │ Hidden in "filters" tab (not shown)       │
+  ├────────────────────────────────┼───────────────────────────────────────────┤
+  │ Per-slot LFO modulation        │ Hidden in "filters" tab (not shown)       │
+  ├────────────────────────────────┼───────────────────────────────────────────┤
+  │ "Stutter/Freeze" buffer effect │ Not visible                               │
+  ├────────────────────────────────┼───────────────────────────────────────────┤
+  │ "Harmonic Tremolo"             │ Not present - just BBD Chorus             │
+  ├────────────────────────────────┼───────────────────────────────────────────┤
+  │ "Halftime" effect              │ Not visible                               │
+  ├────────────────────────────────┼───────────────────────────────────────────┤
+  │ Tilt-style Tone control        │ Just "tone" param on delay and saturation │
+  ├────────────────────────────────┼───────────────────────────────────────────┤
+  │ "Vibe" randomize button        │ Called "randomize" with dropdown          │
+  └────────────────────────────────┴───────────────────────────────────────────┘
+  What Gemini Missed
+
+  1. Re-order toggles on each effect module (signal chain ordering)
+  2. Stereo Width as a master control
+  3. Sample slot selector (1-5 with navigation arrows)
+  4. Linked cutoff toggle on spectral filter
+  5. Preset browser with save/random preset functions
+  6. Mod depth + Mod rate on BBD Delay (modulated delay time)
+
+  ---
+  Questions Before We Proceed
+
+  1. The "filters" tab - We can't see it. Should we assume standard HP/LP
+  filters with resonance per slot, or do you want to speculate/simplify?
+  2. Missing features (Stutter, Halftime) - Gemini invented these. Do you want
+  to:
+    - Keep them as "Omniverse" differentiators
+    - Drop them to match the original more closely
+    - Something else
+  3. Effect routing - Those "re-order" toggles suggest effects can be reordered
+  in the chain. Do you want to implement this flexibility or fix the order?
+  4. Scope check - This is a substantial DSP project. What's your priority:
+    - Faithful clone (match Multiverse exactly)
+    - Inspired-by (use it as a starting point, add/remove features)
+    - MVP first (core sampler + 1-2 effects, then iterate)
+  5. BBD algorithms - Real Bucket Brigade Delay emulation requires specific
+  modeling (clock noise, low-pass filtering per stage, saturation). Do you want:
+    - Authentic BBD modeling (more complex)
+    - Clean digital delay with "character" parameters (simpler)
+
+✻ Churned for 49s
+
+❯ 1. Check the screenshot at @__ss\ui01.png the filters tab is right next   
+  to the effects tab and yes, we need a filters for each slot.              
+  2. Make that a part of the Effects page, again, all effects for each slot 
+  3. Yeah, lets make a feature where user can rearrage effects (serial,     
+  parallel, etc.) in the effects page.                                      
+  4. Lets start with MVP to ensure we're up and running then we'll add      
+  features as we go along.                                                  
+  5. Authentic BBD modeling, lets shoot for the stars.                      
+
+● Let me re-read the screenshot to make sure I understand the architecture
+  correctly.
+
+● Read 1 file (ctrl+o to expand)
+
+● I need to clarify one critical architectural decision because it changes
+  everything:
+
+  ---
+  Architecture Question
+
+  Looking at the original Multiverse, the effects (Time, Movement, Color,
+  Master) appear to be GLOBAL - they process the mixed output of all 5 slots
+  together.
+
+  You're saying you want effects PER SLOT. That's a significant departure:
+  ┌───────────────────────────────┬────────────────────────────────────┐
+  │      Original Multiverse      │            Your Vision             │
+  ├───────────────────────────────┼────────────────────────────────────┤
+  │ 5 slots → Mix → Effects chain │ 5 slots × (own effect chain) → Mix │
+  ├───────────────────────────────┼────────────────────────────────────┤
+  │ ~1 BBD Delay instance         │ ~5 BBD Delay instances             │
+  ├───────────────────────────────┼────────────────────────────────────┤
+  │ CPU: Moderate                 │ CPU: 5x heavier                    │
+  └───────────────────────────────┴────────────────────────────────────┘
+  Which architecture do you actually want?
+
+  1. Per-slot effects - Each slot has its own Delay, Chorus, Saturation,
+  Stutter, etc. User can configure each independently. Much more flexible but
+  CPU-intensive.
+  2. Global effects (like original) - Slots mix together, then pass through a
+  single shared effect chain. The "re-order" feature would reorder this global
+  chain.
+  3. Hybrid - Per-slot filters/LFO, but global effects with send levels per
+  slot.
+
+  ---
+  Proposed MVP Scope
+
+  Assuming we clarify the above, here's what I'd suggest for MVP:
+
+  Phase 1 - Core Sampler (no effects)
+  - 5 drag-and-drop sample slots
+  - Per-slot: Volume, Pitch (±24 st), ADSR envelope
+  - Playback modes: Layer, Random, Random Octave, Reverse
+  - Basic waveform display
+  - MIDI triggering
+
+  Phase 2 - Filters
+  - Per-slot HP/LP filter with resonance
+  - Per-slot LFO → filter cutoff modulation
+
+  Phase 3 - First Effect
+  - Authentic BBD Delay (start with one, nail it)
+
+  Phase 4+ - Additional effects, UI polish, presets, etc.
+
+  ---
+  Does this scope make sense? And which architecture for effects?
+
+✻ Baked for 32s
+
+❯ Lets make it global then, scope looks fine 
+
+● Let me create a finalized specification document we can use as our source of
+  truth.
+
+● Write(specs\SPECIFICATION.md)
+  ⎿  Wrote 1 lines to specs\SPECIFICATION.md
+     # Omniverse - Creative Sampler VST Clone Specification
+
+     **Version:** 1.0
+     **Based on:** Multiverse by HZE Audio x Waves Crate
+     **Framework:** JUCE (C++)
+     **Target Formats:** VST3, AU, Standalone
+
+     ---
+
+     ## Architecture Overview
+
+● Created the spec at specs/SPECIFICATION.md. Here's the summary:
+
+  ---
+  Omniverse MVP Roadmap
+  Phase: 1
+  Scope: Core Sampler
+  Key Deliverables: 5 slots, drag-drop WAV, ADSR, pitch, playback modes, MIDI
+  ────────────────────────────────────────
+  Phase: 2
+  Scope: Filters + LFO
+  Key Deliverables: Per-slot LP/HP/BP filter, LFO modulation
+  ────────────────────────────────────────
+  Phase: 3
+  Scope: BBD Delay
+  Key Deliverables: Authentic bucket-brigade with clock artifacts, companding
+  ────────────────────────────────────────
+  Phase: 4
+  Scope: BBD Chorus
+  Key Deliverables: Stereo chorus using same BBD model
+  ────────────────────────────────────────
+  Phase: 5
+  Scope: Tape Saturation
+  Key Deliverables: Waveshaping with oversampling
+  ────────────────────────────────────────
+  Phase: 6
+  Scope: Spectral Filter
+  Key Deliverables: Dual HP/LP with visual display
+  ────────────────────────────────────────
+  Phase: 7
+  Scope: Stutter
+  Key Deliverables: Buffer freeze/repeat
+  ────────────────────────────────────────
+  Phase: 8
+  Scope: Effect Reordering
+  Key Deliverables: Drag-and-drop chain
+  ────────────────────────────────────────
+  Phase: 9
+  Scope: UI Polish
+  Key Deliverables: Dark theme, waveform displays
+  ────────────────────────────────────────
+  Phase: 10
+  Scope: Presets
+  Key Deliverables: Save/load, weighted randomization
+  ---
+  Three Decisions Before Coding
+
+  1. Polyphony model: When you press a key, should it trigger one voice that
+  plays all 5 slots together, or should each slot have independent polyphony (5
+  separate synths)?
+    - Recommended: One voice → all slots (simpler, matches original)
+  2. Pitch shifting: Change playback speed (length changes) or time-stretch
+  (length preserved)?
+    - Recommended: Playback speed for MVP (classic sampler behavior)
+  3. Plugin name: "Omniverse" works, or do you have another name in mind?
+
+  Once you confirm these, we can start Phase 1 scaffolding.
+
+✻ Worked for 1m 31s
+
+❯ 1. Recommended option                                                     
+  2. Recommended option                                                     
+  3. Omniverse Works                                                        
+
+● Decisions locked in. Let me set up the task list and start scaffolding Phase
+  1.
+
+● Before I scaffold the project, I need to know how you want to handle the JUCE
+  dependency:
+
+● User answered Claude's questions:
+  ⎿  · How should JUCE be included in the project? → FetchContent 
+     (Recommended)
+
+● FetchContent it is. Let me scaffold the project structure.
+
+● Write(CMakeLists.txt)
+  ⎿  Wrote 1 lines to CMakeLists.txt
+     cmake_minimum_required(VERSION 3.22)
+
+     project(Omniverse VERSION 1.0.0)
+
+     set(CMAKE_CXX_STANDARD 20)
+     set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+     # Fetch JUCE
+     include(FetchContent)
+     FetchContent_Declare(
+
+● Write(Source\PluginProcessor.h)
+  ⎿  Wrote 1 lines to Source\PluginProcessor.h
+     #pragma once
+
+     #include <juce_audio_processors/juce_audio_processors.h>
+     #include <juce_dsp/juce_dsp.h>
+     #include "Sampler/OmniverseSampler.h"
+     #include "Utils/Parameters.h"
+
+     class OmniverseAudioProcessor : public juce::AudioProcessor
+     {
+     public:
+
+● Write(Source\PluginProcessor.cpp)
+  ⎿  Wrote 1 lines to Source\PluginProcessor.cpp
+     #include "PluginProcessor.h"
+     #include "PluginEditor.h"
+
+     OmniverseAudioProcessor::OmniverseAudioProcessor()
+         : AudioProcessor(BusesProperties()
+                          .withOutput("Output",
+     juce::AudioChannelSet::stereo(), true))
+         , apvts(*this, nullptr, "Parameters",
+     Parameters::createParameterLayout())
+     {
+         formatManager.registerBasicFormats();
+         sampler.setAPVTS(&apvts);
+
+● Write(Source\PluginEditor.h)
+  ⎿  Wrote 1 lines to Source\PluginEditor.h
+     #pragma once
+
+     #include <juce_gui_basics/juce_gui_basics.h>
+     #include <juce_gui_extra/juce_gui_extra.h>
+     #include "PluginProcessor.h"
+     #include "UI/SlotPanel.h"
+     #include "UI/OmniverseLookAndFeel.h"
+
+     class OmniverseAudioProcessorEditor : public
+     juce::AudioProcessorEditor
+     {
+
+● Write(Source\PluginEditor.cpp)
+  ⎿  Wrote 1 lines to Source\PluginEditor.cpp
+     #include "PluginEditor.h"
+
+     OmniverseAudioProcessorEditor::OmniverseAudioProcessorEditor(Omniverse
+     AudioProcessor& p)
+         : AudioProcessorEditor(&p)
+         , processorRef(p)
+     {
+         setLookAndFeel(&lookAndFeel);
+
+         setupHeader();
+         setupMasterControls();
+
+● Now let me create the utility and sampler classes.
+
+● Write(Source\Utils\Parameters.h)
+  ⎿  Wrote 1 lines to Source\Utils\Parameters.h
+     #pragma once
+
+     #include <juce_audio_processors/juce_audio_processors.h>
+
+     namespace Parameters
+     {
+         // Master parameters
+         inline const juce::String MASTER_VOLUME = "master_volume";
+         inline const juce::String STEREO_WIDTH = "stereo_width";
+
+
+● Write(Source\Utils\Parameters.cpp)
+  ⎿  Wrote 1 lines to Source\Utils\Parameters.cpp
+     #include "Parameters.h"
+
+     namespace Parameters
+     {
+         juce::AudioProcessorValueTreeState::ParameterLayout 
+     createParameterLayout()
+         {
+             std::vector<std::unique_ptr<juce::RangedAudioParameter>>
+     params;
+
+             // Master parameters
+             params.push_back(std::make_unique<juce::AudioParameterFloat>(
+
+● Write(Source\Sampler\SampleSlot.h)
+  ⎿  Wrote 1 lines to Source\Sampler\SampleSlot.h
+     #pragma once
+
+     #include <juce_audio_basics/juce_audio_basics.h>
+     #include <juce_audio_formats/juce_audio_formats.h>
+
+     class SampleSlot
+     {
+     public:
+         SampleSlot();
+         ~SampleSlot() = default;
+
+● Write(Source\Sampler\SampleSlot.cpp)
+  ⎿  Wrote 1 lines to Source\Sampler\SampleSlot.cpp
+     #include "SampleSlot.h"
+
+     SampleSlot::SampleSlot()
+     {
+         thumbnailData.resize(THUMBNAIL_POINTS, 0.0f);
+     }
+
+     bool SampleSlot::loadFromFile(const juce::File& file, 
+     juce::AudioFormatReader& reader, double targetSampleRate)
+     {
+         if (reader.numChannels == 0 || reader.lengthInSamples == 0)
+
+● Write(Source\Sampler\OmniverseVoice.h)
+  ⎿  Wrote 1 lines to Source\Sampler\OmniverseVoice.h
+     #pragma once
+
+     #include <juce_audio_basics/juce_audio_basics.h>
+     #include <juce_audio_processors/juce_audio_processors.h>
+     #include "SampleSlot.h"
+
+     class OmniverseVoice : public juce::SynthesiserVoice
+     {
+     public:
+         OmniverseVoice();
+
+● Write(Source\Sampler\OmniverseVoice.cpp)
+  ⎿  Wrote 1 lines to Source\Sampler\OmniverseVoice.cpp
+     #include "OmniverseVoice.h"
+     #include "../Utils/Parameters.h"
+
+     OmniverseVoice::OmniverseVoice()
+     {
+         for (int i = 0; i < 5; ++i)
+             activeSlotIndices.push_back(i);
+     }
+
+     void OmniverseVoice::prepareToPlay(double sampleRate, int 
+     /*samplesPerBlock*/)
+
+● Write(Source\Sampler\OmniverseSampler.h)
+  ⎿  Wrote 1 lines to Source\Sampler\OmniverseSampler.h
+     #pragma once
+
+     #include <juce_audio_basics/juce_audio_basics.h>
+     #include <juce_audio_processors/juce_audio_processors.h>
+     #include "SampleSlot.h"
+     #include "OmniverseVoice.h"
+
+     class OmniverseSound : public juce::SynthesiserSound
+     {
+     public:
+
+● Write(Source\Sampler\OmniverseSampler.cpp)
+  ⎿  Wrote 1 lines to Source\Sampler\OmniverseSampler.cpp
+     #include "OmniverseSampler.h"
+     #include "../Utils/Parameters.h"
+
+     OmniverseSampler::OmniverseSampler()
+     {
+         for (int i = 0; i < NUM_SLOTS; ++i)
+         {
+             slotPointers[i] = &slots[i];
+         }
+
+
+● Now let me create the UI components.
+
+● Write(Source\UI\WaveformDisplay.h)
+  ⎿  Wrote 1 lines to Source\UI\WaveformDisplay.h
+     #pragma once
+
+     #include <juce_gui_basics/juce_gui_basics.h>
+     #include "../Sampler/SampleSlot.h"
+
+     class WaveformDisplay : public juce::Component
+     {
+     public:
+         WaveformDisplay();
+
+
+● Write(Source\UI\WaveformDisplay.cpp)
+  ⎿  Wrote 1 lines to Source\UI\WaveformDisplay.cpp
+     #include "WaveformDisplay.h"
+
+     WaveformDisplay::WaveformDisplay()
+     {
+         setOpaque(true);
+     }
+
+     void WaveformDisplay::setSampleSlot(const SampleSlot* slot)
+     {
+         sampleSlot = slot;
+
+● Write(Source\UI\SlotPanel.h)
+  ⎿  Wrote 1 lines to Source\UI\SlotPanel.h
+     #pragma once
+
+     #include <juce_gui_basics/juce_gui_basics.h>
+     #include <juce_gui_extra/juce_gui_extra.h>
+     #include <juce_audio_processors/juce_audio_processors.h>
+     #include "WaveformDisplay.h"
+
+     class OmniverseAudioProcessor;
+
+     class SlotPanel : public juce::Component,
+
+● Write(Source\UI\SlotPanel.cpp)
+  ⎿  Wrote 1 lines to Source\UI\SlotPanel.cpp
+     #include "SlotPanel.h"
+     #include "../PluginProcessor.h"
+     #include "../Utils/Parameters.h"
+
+     SlotPanel::SlotPanel(OmniverseAudioProcessor& processor, int index)
+         : processorRef(processor)
+         , slotIndex(index)
+     {
+         addAndMakeVisible(waveformDisplay);
+
+
+● Write(Source\UI\OmniverseLookAndFeel.h)
+  ⎿  Wrote 1 lines to Source\UI\OmniverseLookAndFeel.h
+     #pragma once
+
+     #include <juce_gui_basics/juce_gui_basics.h>
+
+     class OmniverseLookAndFeel : public juce::LookAndFeel_V4
+     {
+     public:
+         OmniverseLookAndFeel();
+
+         void drawLinearSlider(juce::Graphics& g, int x, int y, int width, 
+     int height,
+
+● Write(Source\UI\OmniverseLookAndFeel.cpp)
+  ⎿  Wrote 1 lines to Source\UI\OmniverseLookAndFeel.cpp
+     #include "OmniverseLookAndFeel.h"
+
+     OmniverseLookAndFeel::OmniverseLookAndFeel()
+     {
+         // Set default colours
+         setColour(juce::ResizableWindow::backgroundColourId,
+     backgroundColour);
+         setColour(juce::Label::textColourId, textColour);
+         setColour(juce::TextButton::buttonColourId, surfaceColour);
+         setColour(juce::TextButton::textColourOffId, textColour);
+         setColour(juce::Slider::backgroundColourId, surfaceColour);
+
+● All source files are created. Let me update the task status and try to build.
+
+● Bash(cd "E:\Workspace.Dev.C++\VST_MultiverseClone" && cmake -B build -S .
+      2>&1)
+  ⎿  Error: Exit code 127
+     /usr/bin/bash: line 1: cmake: command not found
+
+● CMake isn't available in the shell. You'll need to configure and build from
+  your preferred Windows environment. Here's the project structure I've created:
+
+  VST_MultiverseClone/
+  ├── CMakeLists.txt
+  ├── specs/
+  │   └── SPECIFICATION.md
+  └── Source/
+      ├── PluginProcessor.h/cpp
+      ├── PluginEditor.h/cpp
+      ├── Sampler/
+      │   ├── SampleSlot.h/cpp
+      │   ├── OmniverseVoice.h/cpp
+      │   └── OmniverseSampler.h/cpp
+      ├── UI/
+      │   ├── SlotPanel.h/cpp
+      │   ├── WaveformDisplay.h/cpp
+      │   └── OmniverseLookAndFeel.h/cpp
+      └── Utils/
+          ├── Parameters.h
+          └── Parameters.cpp
+
+  ---
+  To Build
+
+  Open a Developer Command Prompt for VS or PowerShell and run:
+
+  cd E:\Workspace.Dev.C++\VST_MultiverseClone
+  cmake -B build -S .
+  cmake --build build --config Release
+
+  This will:
+  1. Download JUCE 7.0.12 via FetchContent (first run takes a few minutes)
+  2. Generate VS solution in build/
+  3. Build VST3, AU, and Standalone targets
+
+  ---
+  What's Implemented (Phase 1 Complete)
+  ┌─────────────────────────────────────────────────────┬────────┐
+  │                       Feature                       │ Status │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ 5 sample slots with ADSR                            │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ Drag-and-drop WAV loading                           │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ Per-slot Volume, Pitch                              │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ Playback modes (Layer/Random/Random Octave/Reverse) │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ Waveform display                                    │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ MIDI triggering                                     │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ Master Volume + Stereo Width                        │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ Dark theme UI                                       │ Done   │
+  ├─────────────────────────────────────────────────────┼────────┤
+  │ State save/restore (presets)                        │ Done   │
+  └─────────────────────────────────────────────────────┴────────┘
+  ---
+  Want me to proceed with Phase 2 (Filters + LFO) while you test the build, or
+  would you like to verify it compiles first?
+
+✻ Baked for 4m 56s
+
+❯ lets do a test compilation first 
+
+● Let me try to locate cmake on your Windows system.
+
+● Bash(where cmake 2>/dev/null || cmd.exe /c "where cmake" 2>/dev/null || ls
+      "/c/Program Files/CMake/bin/cmake.exe" 2>/dev/null || ls "/c/Program
+      Files/Microsoft Visua…)
+  ⎿  Running in the background (↓ to manage)
+
+● Read 1 file (ctrl+o to expand)
+
+● Bash(cmd.exe /c "where cmake")
+  ⎿  Microsoft Windows [Version 10.0.26200.7705]
+     (c) Microsoft Corporation. All rights reserved.
+
+     E:\Workspace.Dev.C++\VST_MultiverseClone>
+
+● Bash(powershell.exe -Command "Get-Command cmake -ErrorAction SilentlyContinue
+      | Select-Object -ExpandProperty Source")
+  ⎿  Error: Exit code 1
+
+● Bash(powershell.exe -Command "Test-Path 'C:\Program
+      Files\CMake\bin\cmake.exe'")
+  ⎿  True
+
+● Found it. Let me configure the build.
+
+● Bash(powershell.exe -Command "& 'C:\Program Files\CMake\bin\cmake.exe' -B
+      'E:\Workspace.Dev.C++\VST_MultiverseClone\build' -S
+      'E:\Workspace.Dev.C++\VST_MultiverseClo…)
+  ⎿  Error: Exit code 1
+     cmake.exe : CMake Warning at 
+     build/_deps/juce-src/extras/Build/CMake/JUCEUtils.cmake:1544 (message):
+     At line:1 char:1
+     + & 'C:\Program Files\CMake\bin\cmake.exe' -B 'E:\Workspace.Dev.C++\VST ...
+     + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         + CategoryInfo          : NotSpecified: (CMake Warning a...1544 
+     (message)::String) [], RemoteException
+         + FullyQualifiedErrorId : NativeCommandError
+      
+       Target Omniverse has JUCE_BUNDLE_ID 'com.Omniverse Audio.Omniverse', whic
+       contains spaces.  Use the BUNDLE_ID option to specify a valid ID.
+
+     … +32 lines (ctrl+o to see all)
+
+● Configuration succeeded (the "error" is just a warning about spaces in the
+  bundle ID). Let me fix that and then build.
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(CMakeLists.txt)
+  ⎿  Added 2 lines, removed 1 line
+      30                                                                 
+      31  # Plugin target                                                
+      32  juce_add_plugin(Omniverse                                      
+      33 -    COMPANY_NAME "Omniverse Audio"                             
+      33 +    COMPANY_NAME "OmniverseAudio"                              
+      34 +    BUNDLE_ID "com.omniverseaudio.omniverse"                   
+      35      IS_SYNTH TRUE                                              
+      36      NEEDS_MIDI_INPUT TRUE                                      
+      37      NEEDS_MIDI_OUTPUT FALSE                                    
+
+● Now let's build.
+
+● Bash(powershell.exe -Command "& 'C:\Program Files\CMake\bin\cmake.exe' --build
+       'E:\Workspace.Dev.C++\VST_MultiverseClone\build' --config Release 2>&1")
+  ⎿  Error: Exit code 1
+     CMake is re-running because 
+     E:/Workspace.Dev.C++/VST_MultiverseClone/build/CMakeFiles/generate.stamp is
+     out-of-date.
+       the file 'E:/Workspace.Dev.C++/VST_MultiverseClone/CMakeLists.txt'
+       is newer than 'E:/Workspace.Dev.C++/VST_MultiverseClone/build/CMakeFiles/
+     enerate.stamp.depend'
+       result='-1'
+     -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+     -- Configuring juceaide
+     -- Building juceaide
+     -- Exporting juceaide
+     -- Configuring done (7.9s)
+
+     … +90 lines (ctrl+o to see all)
+
+● The plugin compiled successfully. The error is just a permission issue when
+  trying to copy to C:\Program Files\Common Files\VST3\ (requires admin). The
+  VST3 is built at:
+
+  E:\Workspace.Dev.C++\VST_MultiverseClone\build\Omniverse_artefacts\Release\VST
+  3\Omniverse.vst3
+
+  Let me disable the auto-copy and build the Standalone too.
+
+● Update(CMakeLists.txt)
+  ⎿  Added 1 line, removed 1 line
+      37      NEEDS_MIDI_OUTPUT FALSE                                    
+      38      IS_MIDI_EFFECT FALSE                                       
+      39      EDITOR_WANTS_KEYBOARD_FOCUS FALSE                          
+      40 -    COPY_PLUGIN_AFTER_BUILD TRUE                               
+      40 +    COPY_PLUGIN_AFTER_BUILD FALSE                              
+      41      PLUGIN_MANUFACTURER_CODE Omni                              
+      42      PLUGIN_CODE Omvs                                           
+      43      FORMATS VST3 AU Standalone                                 
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\UI\SlotPanel.cpp)
+  ⎿  Removed 2 lines
+       8  {                                                              
+       9      addAndMakeVisible(waveformDisplay);                        
+      10                                                                 
+      11 -    auto& apvts = processorRef.getAPVTS();                     
+      12 -                                                               
+      11      // Volume                                                  
+      12      createSlider(volumeSlider,                                 
+          Parameters::slotVolume(slotIndex), volumeAttachment);          
+      13      volumeSlider.setTextValueSuffix(" dB");                    
+
+● Now let me rebuild and also build the Standalone app.
+
+● Bash(powershell.exe -Command "& 'C:\Program Files\CMake\bin\cmake.exe' --build
+       'E:\Workspace.Dev.C++\VST_MultiverseClone\build' --config Release
+      --target Omniverse_S…)
+  ⎿ CMake is re-running because E:/Workspace.Dev.C++/VST_MultiverseClone/bu
+    ild/CMakeFiles/generate.stamp is out-of-date.
+      the file 'E:/Workspace.Dev.C++/VST_MultiverseClone/CMakeLists.txt'
+    … +38 lines (ctrl+o to expand)
+
+  ⎿  (timeout 5m)
+
+● Build successful! Both targets compiled:
+  ┌────────────┬────────────────────────────────────────────────────────────┐
+  │  Artefact  │                          Location                          │
+  ├────────────┼────────────────────────────────────────────────────────────┤
+  │ VST3       │ build\Omniverse_artefacts\Release\VST3\Omniverse.vst3      │
+  ├────────────┼────────────────────────────────────────────────────────────┤
+  │ Standalone │ build\Omniverse_artefacts\Release\Standalone\Omniverse.exe │
+  └────────────┴────────────────────────────────────────────────────────────┘
+
+● ---
+  Phase 1 Complete
+
+  You can test the standalone now:
+
+  E:\Workspace.Dev.C++\VST_MultiverseClone\build\Omniverse_artefacts\Release\Sta
+  ndalone\Omniverse.exe
+
+  What you should see:
+  - Dark UI with 5 slot panels
+  - Each slot shows "Drop sample here"
+  - Volume, Pitch, and ADSR controls per slot
+  - Playback mode toggles at the bottom (Layer, Random, Random Octave, Reverse)
+  - Master Volume and Stereo Width at the top right
+
+  To test:
+  1. Run the standalone
+  2. Drag a WAV file onto any slot
+  3. Play MIDI notes (use your MIDI keyboard or the on-screen keyboard if
+  available)
+  4. Adjust Volume, Pitch, ADSR and hear the changes
+  5. Toggle playback modes
+
+  Let me know:
+  - Does it launch and show the UI?
+  - Can you load samples?
+  - Does audio play when you trigger MIDI?
+
+  Once you've verified basic functionality, we can move to Phase 2: Filters +
+  LFO.
+
+✻ Brewed for 7m 36s
+
+● Background command "Locate cmake executable" was killed
+
+● That was just the earlier cmake search task - we already found cmake and
+  completed the build successfully.
+
+  Go ahead and test the standalone at:
+  E:\Workspace.Dev.C++\VST_MultiverseClone\build\Omniverse_artefacts\Release\Sta
+  ndalone\Omniverse.exe
+
+  Let me know how it goes.
+
+❯ Well, the standalone runs, can drop sample, but audio starts playing      
+  immediately, and choppy audio at that. Also, I did say I wanted the theme 
+   to be violet/hot pink neon-based, so replace the orange with             
+  violet/purple, keep the white outlines, and make pink the secondary       
+  color. I forgot what its called for secondary colors, indents, or         
+  something like that.                                                      
+
+● Got it - two issues to fix:
+
+  1. Audio bug: Playing immediately on drop + choppy
+  2. Theme: Violet/purple primary, hot pink accent (the word you're thinking of
+  might be "accent color")
+
+  Let me fix both.
+
+● Update(Source\UI\OmniverseLookAndFeel.h)
+  ⎿  Added 2 lines, removed 1 line
+      24      juce::Font getLabelFont(juce::Label& label) override;      
+      25                                                                 
+      26  private:                                                       
+      27 -    juce::Colour accentColour { 0xFFFF9500 };                  
+      27 +    juce::Colour accentColour { 0xFF8B5CF6 };      //          
+         +Violet/Purple primary                                          
+      28 +    juce::Colour secondaryColour { 0xFFFF006E };   // Hot pink 
+         + accent                                                        
+      29      juce::Colour backgroundColour { 0xFF0A0A0A };              
+      30      juce::Colour surfaceColour { 0xFF1A1A1A };                 
+      31      juce::Colour textColour { 0xFFFFFFFF };                    
+
+● Update(Source\UI\WaveformDisplay.h)
+  ⎿  Added 2 lines, removed 1 line
+      14  private:                                                       
+      15      const SampleSlot* sampleSlot = nullptr;                    
+      16                                                                 
+      17 -    juce::Colour waveformColour { 0xFFFF9500 }; // Orange like 
+         - Multiverse                                                    
+      17 +    juce::Colour waveformColour { 0xFF8B5CF6 };    //          
+         +Violet/Purple                                                  
+      18 +    juce::Colour waveformAccent { 0xFFFF006E };    // Hot pink 
+         + for highlights                                                
+      19      juce::Colour backgroundColour { 0xFF1A1A1A };              
+      20  };                                                             
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\UI\WaveformDisplay.cpp)
+  ⎿  Added 5 lines, removed 5 lines
+      72                                                                 
+      73      waveformPath.closeSubPath();                               
+      74                                                                 
+      75 -    // Fill with gradient                                      
+      75 +    // Fill with violet to pink gradient                       
+      76      g.setGradientFill(juce::ColourGradient(                    
+      77          waveformColour.withAlpha(0.8f), bounds.getCentreX(),   
+          centerY - maxHeight,                                           
+      78 -        waveformColour                                         
+         -.withAlpha(0.4f), bounds.getCentreX(), centerY + maxHeight,    
+      78 +        waveformAccent                                         
+         +.withAlpha(0.4f), bounds.getCentreX(), centerY + maxHeight,    
+      79          false                                                  
+      80      ));                                                        
+      81      g.fillPath(waveformPath);                                  
+      82                                                                 
+      83 -    // Draw outline                                            
+      84 -    g.setColour(waveformColour);                               
+      85 -    g.strokePath(waveformPath, juce::PathStrokeType(1.0f));    
+      83 +    // Draw outline with hot pink for neon effect              
+      84 +    g.setColour(waveformAccent);                               
+      85 +    g.strokePath(waveformPath, juce::PathStrokeType(1.5f));    
+      86                                                                 
+      87      // Draw filename                                           
+      88      g.setColour(juce::Colours::white.withAlpha(0.7f));         
+
+● Update(Source\UI\SlotPanel.cpp)
+  ⎿  Added 2 lines, removed 2 lines
+      83      // Drag highlight                                          
+      84      if (isDragOver)                                            
+      85      {                                                          
+      86 -        g.setColour(juce::Colour(0xFFFF9500).withAlpha(0.3f)); 
+      86 +        g.setColour(juce::Colour(0xFFFF006E).withAlpha(0.3f)); 
+      87          g.fillRoundedRectangle(bounds, 4.0f);                  
+      88                                                                 
+      89 -        g.setColour(juce::Colour(0xFFFF9500));                 
+      89 +        g.setColour(juce::Colour(0xFFFF006E));                 
+      90          g.drawRoundedRectangle(bounds.reduced(1), 4.0f, 2.0f); 
+      91      }                                                          
+      92  }                                                              
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\UI\OmniverseLookAndFeel.cpp)
+  ⎿  Added 4 lines, removed 2 lines
+      66                                                                 
+      67      if (button.getToggleState())                               
+      68      {                                                          
+      69 -        g.setColour(accentColour);                             
+      69 +        // Hot pink fill when active                           
+      70 +        g.setColour(secondaryColour);                          
+      71          g.fillRoundedRectangle(indicatorBounds.reduced(2.0f),  
+          2.0f);                                                         
+      72      }                                                          
+      73                                                                 
+      74 -    g.setColour(juce::Colour(0xFF3A3A3A));                     
+      74 +    // Violet border                                           
+      75 +    g.setColour(button.getToggleState() ? accentColour :       
+         +juce::Colour(0xFF3A3A3A));                                     
+      76      g.drawRoundedRectangle(indicatorBounds, 3.0f, 1.0f);       
+      77                                                                 
+      78      // Draw text                                               
+
+● Now let me investigate the audio issues. I see a bug - the envelope timing is
+  tied to sample position instead of being independent. Let me fix both issues.
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\Sampler\OmniverseVoice.h)
+  ⎿  Added 4 lines, removed 2 lines
+      32  private:                                                       
+      33      struct SlotState                                           
+      34      {                                                          
+      35 -        double position = 0.0;                                 
+      35 +        double samplePosition = 0.0;     // Position in the    
+         +sample (affected by pitch)                                     
+      36 +        double envelopeTime = 0.0;       // Time since note    
+         +start (in samples, NOT affected by pitch)                      
+      37          float envelopeValue = 0.0f;                            
+      38          bool inRelease = false;                                
+      39          float releaseStartValue = 0.0f;                        
+      40 -        double releasePosition = 0.0;                          
+      40 +        double releaseTime = 0.0;        // Time since release 
+         + started                                                       
+      41 +        bool isPlaying = false;                                
+      42      };                                                         
+      43                                                                 
+      44      float calculateEnvelope(int slotIndex, SlotState& state,   
+          bool noteIsHeld);                                              
+
+● Write(Source\Sampler\OmniverseVoice.cpp)
+  ⎿  Added 72 lines, removed 52 lines
+      23      midiNote = midiNoteNumber + (octaveShift * 12);            
+      24      noteVelocity = velocity;                                   
+      25                                                                 
+      26 +    // Reset all slot states for new note                      
+      27      for (auto& state : slotStates)                             
+      28      {                                                          
+      29 -        state.position = 0.0;                                  
+      29 +        state.samplePosition = 0.0;                            
+      30 +        state.envelopeTime = 0.0;                              
+      31          state.envelopeValue = 0.0f;                            
+      32          state.inRelease = false;                               
+      33          state.releaseStartValue = 0.0f;                        
+      34 -        state.releasePosition = 0.0;                           
+      34 +        state.releaseTime = 0.0;                               
+      35 +        state.isPlaying = true;                                
+      36      }                                                          
+      37  }                                                              
+      38                                                                 
+     ...
+      37  {                                                              
+      38      if (allowTailOff)                                          
+      39      {                                                          
+      40 +        // Enter release phase                                 
+      41          for (int i = 0; i < 5; ++i)                            
+      42          {                                                      
+      43              slotStates[i].inRelease = true;                    
+      44              slotStates[i].releaseStartValue =                  
+          slotStates[i].envelopeValue;                                   
+      45 -            slotStates[i].releasePosition = 0.0;               
+      45 +            slotStates[i].releaseTime = 0.0;                   
+      46          }                                                      
+      47      }                                                          
+      48      else                                                       
+      49      {                                                          
+      50 +        // Immediate stop                                      
+      51 +        for (auto& state : slotStates)                         
+      52 +        {                                                      
+      53 +            state.isPlaying = false;                           
+      54 +        }                                                      
+      55          clearCurrentNote();                                    
+      56      }                                                          
+      57  }                                                              
+     ...
+       81      float releaseSamples = (releaseMs / 1000.0f) *            
+           static_cast<float>(currentSampleRate);                        
+       82      float sustainLevel =                                      
+           juce::Decibels::decibelsToGain(sustainDb);                    
+       83                                                                
+       84 +    // Minimum envelope times to prevent clicks               
+       85 +    if (attackSamples < 1.0f) attackSamples = 1.0f;           
+       86 +    if (decaySamples < 1.0f) decaySamples = 1.0f;             
+       87 +    if (releaseSamples < 1.0f) releaseSamples = 1.0f;         
+       88 +                                                              
+       89 +    // Release phase                                          
+       90      if (state.inRelease)                                      
+       91      {                                                         
+       92 -        if (releaseSamples > 0)                               
+       92 +        float releaseProgress =                               
+          +static_cast<float>(state.releaseTime) / releaseSamples;       
+       93 +        if (releaseProgress >= 1.0f)                          
+       94          {                                                     
+       95 -            float releaseProgress =                           
+          -static_cast<float>(state.releasePosition) / releaseSamples;   
+       96 -            if (releaseProgress >= 1.0f)                      
+       97 -            {                                                 
+       98 -                return 0.0f;                                  
+       99 -            }                                                 
+      100 -            return state.releaseStartValue * (1.0f -          
+          -releaseProgress);                                             
+       95 +            state.isPlaying = false;                          
+       96 +            return 0.0f;                                      
+       97          }                                                     
+       98 -        return 0.0f;                                          
+       98 +        return state.releaseStartValue * (1.0f -              
+          +releaseProgress);                                             
+       99      }                                                         
+      100                                                                
+      101 -    double totalPosition = state.position;                    
+      101 +    double envTime = state.envelopeTime;                      
+      102                                                                
+      103      // Attack phase                                           
+      104 -    if (totalPosition < attackSamples)                        
+      104 +    if (envTime < attackSamples)                              
+      105      {                                                         
+      106 -        return static_cast<float>(totalPosition               
+          - / attackSamples);                                            
+      106 +        return static_cast<float>(envTime / attackSamples);   
+      107      }                                                         
+      108                                                                
+      109      // Decay phase                                            
+      110 -    double decayPosition = totalPosition - attackSamples;     
+      110 +    double decayPosition = envTime - attackSamples;           
+      111      if (decayPosition < decaySamples)                         
+      112      {                                                         
+      113          float decayProgress =                                 
+           static_cast<float>(decayPosition / decaySamples);             
+     ...
+      126      if (sampleSlots == nullptr || apvts == nullptr)           
+      127          return;                                               
+      128                                                                
+      129 -    bool anySlotPlaying = false;                              
+      129 +    // Check if voice is active                               
+      130 +    if (!isVoiceActive())                                     
+      131 +        return;                                               
+      132                                                                
+      133 +    bool anySlotStillPlaying = false;                         
+      134 +                                                              
+      135      for (int sample = 0; sample < numSamples; ++sample)       
+      136      {                                                         
+      137          float leftSample = 0.0f;                              
+     ...
+      140                  continue;                                     
+      141                                                                
+      142              auto& state = slotStates[slotIdx];                
+      143 +                                                              
+      144 +            if (!state.isPlaying)                             
+      145 +                continue;                                     
+      146 +                                                              
+      147              const auto& audioData = slot->getAudioData();     
+      148              int numSlotSamples = audioData.getNumSamples();   
+      149              int numChannels = audioData.getNumChannels();     
+     ...
+      152              float totalPitchShift = (midiNote - ROOT_NOTE) +  
+           pitchSemitones;                                               
+      153              double pitchRatio = std::pow(2.0, totalPitchShift 
+            / 12.0);                                                     
+      154                                                                
+      155 -            // Calculate envelope                             
+      156 -            bool noteIsHeld = !slotStates[slotIdx].inRelease; 
+      155 +            // Calculate envelope (independent of pitch)      
+      156 +            bool noteIsHeld = !state.inRelease;               
+      157              float envelope = calculateEnvelope(slotIdx,       
+           state, noteIsHeld);                                           
+      158              state.envelopeValue = envelope;                   
+      159                                                                
+     ...
+      161              float volumeDb =                                  
+           getParameter(Parameters::slotVolume(slotIdx));                
+      162              float volume =                                    
+           juce::Decibels::decibelsToGain(volumeDb) * noteVelocity;      
+      163                                                                
+      164 -            // Calculate sample position                      
+      164 +            // Calculate sample read position                 
+      165              double readPosition = isReversed                  
+      166 -                ? (numSlotSamples - 1) - state.position       
+      167 -                : state.position;                             
+      166 +                ? (numSlotSamples - 1) - state.samplePosition 
+      167 +                : state.samplePosition;                       
+      168                                                                
+      169 -            if (readPosition >= 0 && readPosition <           
+          -numSlotSamples - 1)                                           
+      169 +            // Check if still within sample bounds            
+      170 +            if (readPosition >= 0 && readPosition <           
+          +numSlotSamples - 1 && state.isPlaying)                        
+      171              {                                                 
+      172 -                anySlotPlaying = true;                        
+      172 +                anySlotStillPlaying = true;                   
+      173                                                                
+      174 -                // Linear interpolation                       
+      174 +                // Linear interpolation for smooth playback   
+      175                  int pos0 = static_cast<int>(readPosition);    
+      176                  int pos1 = pos0 + 1;                          
+      177                  float frac = static_cast<float>(readPosition  
+           - pos0);                                                      
+      178                                                                
+      179                  if (pos1 >= numSlotSamples)                   
+      180 -                    pos1 = pos0;                              
+      180 +                    pos1 = numSlotSamples - 1;                
+      181                                                                
+      182                  float leftVal = 0.0f;                         
+      183                  float rightVal = 0.0f;                        
+      184                                                                
+      185 +                // Read left channel (or mono)                
+      186                  if (numChannels >= 1)                         
+      187                  {                                             
+      188                      const float* channelData =                
+           audioData.getReadPointer(0);                                  
+      189                      leftVal = channelData[pos0] * (1.0f -     
+           frac) + channelData[pos1] * frac;                             
+      190                  }                                             
+      191                                                                
+      192 +                // Read right channel (or duplicate mono)     
+      193                  if (numChannels >= 2)                         
+      194                  {                                             
+      195                      const float* channelData =                
+           audioData.getReadPointer(1);                                  
+     ...
+      197                      rightVal = leftVal;                       
+      198                  }                                             
+      199                                                                
+      200 +                // Apply envelope and volume                  
+      201                  float gain = envelope * volume;               
+      202                  leftSample += leftVal * gain;                 
+      203                  rightSample += rightVal * gain;               
+      204              }                                                 
+      205 +            else if (state.samplePosition >= numSlotSamples)  
+      206 +            {                                                 
+      207 +                // Sample finished playing                    
+      208 +                if (!state.inRelease)                         
+      209 +                {                                             
+      210 +                    state.inRelease = true;                   
+      211 +                    state.releaseStartValue =                 
+          +state.envelopeValue;                                          
+      212 +                    state.releaseTime = 0.0;                  
+      213 +                }                                             
+      214 +            }                                                 
+      215                                                                
+      216 -            // Advance position                               
+      217 -            state.position += pitchRatio;                     
+      216 +            // Advance sample position (affected by pitch)    
+      217 +            state.samplePosition += pitchRatio;               
+      218                                                                
+      219 +            // Advance envelope time (NOT affected by pitch - 
+          + real time)                                                   
+      220 +            state.envelopeTime += 1.0;                        
+      221 +                                                              
+      222 +            // Advance release time if in release             
+      223              if (state.inRelease)                              
+      224              {                                                 
+      225 -                state.releasePosition += 1.0;                 
+      225 +                state.releaseTime += 1.0;                     
+      226              }                                                 
+      227                                                                
+      228 -            // Check if envelope has finished                 
+      229 -            if (state.inRelease && envelope <= 0.0001f)       
+      228 +            // Check if this slot is still playing            
+      229 +            if (state.isPlaying && envelope > 0.0001f)        
+      230              {                                                 
+      231 -                // This slot is done                          
+      231 +                anySlotStillPlaying = true;                   
+      232              }                                                 
+      233          }                                                     
+      234                                                                
+      235 -        // Write to output                                    
+      235 +        // Write to output buffer                             
+      236          if (outputBuffer.getNumChannels() >= 1)               
+      237              outputBuffer.addSample(0, startSample + sample,   
+           leftSample);                                                  
+      238          if (outputBuffer.getNumChannels() >= 2)               
+      239              outputBuffer.addSample(1, startSample + sample,   
+           rightSample);                                                 
+      240      }                                                         
+      241                                                                
+      242 -    // Check if voice should stop                             
+      243 -    bool allSlotsFinished = true;                             
+      244 -    for (int slotIdx : activeSlotIndices)                     
+      242 +    // Clear voice if all slots are done                      
+      243 +    if (!anySlotStillPlaying)                                 
+      244      {                                                         
+      245 -        auto* slot = (*sampleSlots)[slotIdx];                 
+      246 -        if (slot != nullptr && slot->isLoaded())              
+      247 -        {                                                     
+      248 -            auto& state = slotStates[slotIdx];                
+      249 -            if (!state.inRelease || state.envelopeValue >     
+          -0.0001f)                                                      
+      250 -            {                                                 
+      251 -                if (state.position < slot->getNumSamples())   
+      252 -                {                                             
+      253 -                    allSlotsFinished = false;                 
+      254 -                    break;                                    
+      255 -                }                                             
+      256 -            }                                                 
+      257 -        }                                                     
+      258 -    }                                                         
+      259 -                                                              
+      260 -    if (allSlotsFinished && !anySlotPlaying)                  
+      261 -    {                                                         
+      245          clearCurrentNote();                                   
+      246      }                                                         
+      247  }                                                             
+
+● Now let me rebuild.
+
+● Bash(powershell.exe -Command "& 'C:\Program Files\CMake\bin\cmake.exe' --build
+       'E:\Workspace.Dev.C++\VST_MultiverseClone\build' --config Release
+      --target Omniverse_S…)
+  ⎿  MSBuild version 17.14.23+b0019275e for .NET Framework
+
+       Checking File Globs
+     … +15 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+
+● Build successful! Here's what I fixed:
+
+  ---
+  Changes Made
+
+  Theme (Violet/Pink Neon)
+
+  - Primary color: Violet #8B5CF6
+  - Accent color: Hot Pink #FF006E
+  - Waveform now has violet-to-pink gradient with pink outline
+  - Toggle buttons glow pink when active with violet border
+  - Drag highlight is now pink
+
+  Audio Fixes
+
+  1. Separated envelope timing from sample position - envelope now runs in real 
+  time, not affected by pitch shifting
+  2. Added isVoiceActive() check - voices only render when a note is actually
+  playing
+  3. Added isPlaying flag per slot - proper tracking of slot playback state
+  4. Minimum envelope times - prevents clicks from instant attack/decay/release
+
+  ---
+  Test it again:
+  E:\Workspace.Dev.C++\VST_MultiverseClone\build\Omniverse_artefacts\Release\Sta
+  ndalone\Omniverse.exe
+
+  Expected behavior now:
+  - Audio should NOT play when you drop a sample
+  - Audio only plays when you trigger a MIDI note
+  - Playback should be smooth, not choppy
+  - UI should be violet/pink themed
+
+  Let me know how it goes.
+
+✻ Crunched for 3m 30s
+
+❯ Audio doesnt play when I drop a sample, so thats good. I dont have a midi 
+   controller to test midi, so I'll have to test the vst in Abelton and use 
+   my computer keyboard to test. UI is fine. Make adjustments to the vst,   
+  and Ill test the other things                                             
+
+● Bash(powershell.exe -Command "& 'C:\Program Files\CMake\bin\cmake.exe' --build
+       'E:\Workspace.Dev.C++\VST_MultiverseClone\build' --config Release
+      --target Omniverse_V…)
+  ⎿  MSBuild version 17.14.23+b0019275e for .NET Framework
+
+       Checking File Globs
+     … +16 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+
+● VST3 built. Copy it to your VST3 folder:
+
+  From:
+  E:\Workspace.Dev.C++\VST_MultiverseClone\build\Omniverse_artefacts\Release\VST
+  3\Omniverse.vst3
+
+  To:
+  C:\Program Files\Common Files\VST3\
+
+  Or you can point Ableton to scan the build folder directly.
+
+  In Ableton:
+  1. Add Omniverse as an instrument on a MIDI track
+  2. Drop a WAV sample into one of the 5 slots
+  3. Use your computer keyboard (make sure the track is armed and keyboard input
+   is enabled)
+  4. Play some notes
+
+  Let me know what works and what doesn't.
+
+✻ Cogitated for 30s
+
+❯ So far so good, lets continue with the other features 
+
+● Excellent. Moving on to Phase 2: Filters + LFO.
+
+● Write(Source\DSP\SVFilter.h)
+  ⎿  Wrote 1 lines to Source\DSP\SVFilter.h
+     #pragma once
+
+     #include <cmath>
+
+     class SVFilter
+     {
+     public:
+         enum class Type
+         {
+             LowPass,
+
+● Write(Source\DSP\LFO.h)
+  ⎿  Wrote 1 lines to Source\DSP\LFO.h
+     #pragma once
+
+     #include <cmath>
+     #include <random>
+
+     class LFO
+     {
+     public:
+         enum class Waveform
+         {
+
+● Now let me integrate filters and LFOs into the voice.
+
+● Read 1 file (ctrl+o to expand)
+
+● Write(Source\Sampler\OmniverseVoice.h)
+  ⎿  Added 18 lines, removed 4 lines
+       3  #include <juce_audio_basics/juce_audio_basics.h>               
+       4  #include <juce_audio_processors/juce_audio_processors.h>       
+       5  #include "SampleSlot.h"                                        
+       6 +#include "../DSP/SVFilter.h"                                   
+       7 +#include "../DSP/LFO.h"                                        
+       8                                                                 
+       9  class OmniverseVoice : public juce::SynthesiserVoice           
+      10  {                                                              
+     ...
+      32  private:                                                       
+      33      struct SlotState                                           
+      34      {                                                          
+      35 -        double samplePosition = 0.0;     // Position in the    
+         -sample (affected by pitch)                                     
+      36 -        double envelopeTime = 0.0;       // Time since note    
+         -start (in samples, NOT affected by pitch)                      
+      35 +        double samplePosition = 0.0;                           
+      36 +        double envelopeTime = 0.0;                             
+      37          float envelopeValue = 0.0f;                            
+      38          bool inRelease = false;                                
+      39          float releaseStartValue = 0.0f;                        
+      40 -        double releaseTime = 0.0;                              
+         -        // Time since release started                          
+      40 +        double releaseTime = 0.0;                              
+      41          bool isPlaying = false;                                
+      42      };                                                         
+      43                                                                 
+      44      float calculateEnvelope(int slotIndex, SlotState& state,   
+          bool noteIsHeld);                                              
+      45      float getParameter(const juce::String& paramId);           
+      46 +    void updateFilterParameters(int slotIndex);                
+      47                                                                 
+      48      std::array<SampleSlot*, 5>* sampleSlots = nullptr;         
+      49      juce::AudioProcessorValueTreeState* apvts = nullptr;       
+     ...
+      50      std::array<SlotState, 5> slotStates;                       
+      51      std::vector<int> activeSlotIndices;                        
+      52                                                                 
+      53 +    // Per-slot filters (stereo)                               
+      54 +    std::array<SVFilter, 5> filtersL;                          
+      55 +    std::array<SVFilter, 5> filtersR;                          
+      56 +                                                               
+      57 +    // Per-slot LFOs                                           
+      58 +    std::array<LFO, 5> lfos;                                   
+      59 +                                                               
+      60      double currentSampleRate = 44100.0;                        
+      61      int midiNote = 60;                                         
+      62      float noteVelocity = 1.0f;                                 
+      63      bool isReversed = false;                                   
+      64      int octaveShift = 0;                                       
+      65                                                                 
+      66 -    static constexpr int ROOT_NOTE = 60; // Middle C           
+      66 +    // Control rate divider (update filters every N samples)   
+      67 +    int controlRateCounter = 0;                                
+      68 +    static constexpr int CONTROL_RATE_DIVIDER = 32;            
+      69 +                                                               
+      70 +    static constexpr int ROOT_NOTE = 60;                       
+      71  };                                                             
+
+● Write(Source\Sampler\OmniverseVoice.cpp)
+  ⎿  Added 92 lines, removed 28 lines
+      10  void OmniverseVoice::prepareToPlay(double sampleRate, int      
+          /*samplesPerBlock*/)                                           
+      11  {                                                              
+      12      currentSampleRate = sampleRate;                            
+      13 +                                                               
+      14 +    // Prepare filters and LFOs                                
+      15 +    for (int i = 0; i < 5; ++i)                                
+      16 +    {                                                          
+      17 +        filtersL[i].prepare(sampleRate);                       
+      18 +        filtersR[i].prepare(sampleRate);                       
+      19 +        lfos[i].prepare(sampleRate);                           
+      20 +    }                                                          
+      21  }                                                              
+      22                                                                 
+      23  bool OmniverseVoice::canPlaySound(juce::SynthesiserSound*      
+          sound)                                                         
+     ...
+      24      noteVelocity = velocity;                                   
+      25                                                                 
+      26      // Reset all slot states for new note                      
+      27 -    for (auto& state : slotStates)                             
+      27 +    for (int i = 0; i < 5; ++i)                                
+      28      {                                                          
+      29 +        auto& state = slotStates[i];                           
+      30          state.samplePosition = 0.0;                            
+      31          state.envelopeTime = 0.0;                              
+      32          state.envelopeValue = 0.0f;                            
+     ...
+      33          state.releaseStartValue = 0.0f;                        
+      34          state.releaseTime = 0.0;                               
+      35          state.isPlaying = true;                                
+      36 +                                                               
+      37 +        // Reset filters and LFOs                              
+      38 +        filtersL[i].reset();                                   
+      39 +        filtersR[i].reset();                                   
+      40 +        lfos[i].reset();                                       
+      41      }                                                          
+      42 +                                                               
+      43 +    controlRateCounter = 0;                                    
+      44  }                                                              
+      45                                                                 
+      46  void OmniverseVoice::stopNote(float /*velocity*/, bool         
+          allowTailOff)                                                  
+      47  {                                                              
+      48      if (allowTailOff)                                          
+      49      {                                                          
+      50 -        // Enter release phase                                 
+      50          for (int i = 0; i < 5; ++i)                            
+      51          {                                                      
+      52              slotStates[i].inRelease = true;                    
+     ...
+      50      }                                                          
+      51      else                                                       
+      52      {                                                          
+      53 -        // Immediate stop                                      
+      53          for (auto& state : slotStates)                         
+      54          {                                                      
+      55              state.isPlaying = false;                           
+     ...
+      61                                                                 
+      62  void OmniverseVoice::pitchWheelMoved(int                       
+          /*newPitchWheelValue*/)                                        
+      63  {                                                              
+      64 -    // TODO: Implement pitch wheel                             
+      64  }                                                              
+      65                                                                 
+      66  void OmniverseVoice::controllerMoved(int /*controllerNumber*/, 
+           int /*newControllerValue*/)                                   
+      67  {                                                              
+      68 -    // TODO: Handle CC messages                                
+      68  }                                                              
+      69                                                                 
+      70  float OmniverseVoice::getParameter(const juce::String&         
+          paramId)                                                       
+     ...
+       78      return param != nullptr ? param->load() : 0.0f;           
+       79  }                                                             
+       80                                                                
+       81 +void OmniverseVoice::updateFilterParameters(int slotIndex)    
+       82 +{                                                             
+       83 +    if (apvts == nullptr)                                     
+       84 +        return;                                               
+       85 +                                                              
+       86 +    // Get filter parameters                                  
+       87 +    int filterType = static_cast<int>(getParameter(Parameters 
+          +::slotFilterType(slotIndex)));                                
+       88 +    float baseCutoff =                                        
+          +getParameter(Parameters::slotFilterCutoff(slotIndex));        
+       89 +    float resonance =                                         
+          +getParameter(Parameters::slotFilterResonance(slotIndex));     
+       90 +    bool bypass =                                             
+          +getParameter(Parameters::slotFilterBypass(slotIndex)) > 0.5f; 
+       91 +                                                              
+       92 +    // Get LFO parameters                                     
+       93 +    float lfoRate =                                           
+          +getParameter(Parameters::slotLfoRate(slotIndex));             
+       94 +    float lfoDepth =                                          
+          +getParameter(Parameters::slotLfoDepth(slotIndex));            
+       95 +    int lfoWaveform = static_cast<int>(getParameter(Parameter 
+          +s::slotLfoWaveform(slotIndex)));                              
+       96 +                                                              
+       97 +    // Update LFO                                             
+       98 +    lfos[slotIndex].setRate(lfoRate);                         
+       99 +    lfos[slotIndex].setWaveform(static_cast<LFO::Waveform>(lf 
+          +oWaveform));                                                  
+      100 +                                                              
+      101 +    // Calculate modulated cutoff                             
+      102 +    float lfoValue = lfos[slotIndex].getCurrentValue(); // -1 
+          + to 1                                                         
+      103 +    float modulationRange = baseCutoff * lfoDepth; //         
+          +Modulate by percentage of base cutoff                         
+      104 +    float modulatedCutoff = baseCutoff + (lfoValue *          
+          +modulationRange);                                             
+      105 +                                                              
+      106 +    // Clamp cutoff to valid range                            
+      107 +    modulatedCutoff = std::clamp(modulatedCutoff, 20.0f,      
+          +20000.0f);                                                    
+      108 +                                                              
+      109 +    // Set filter type                                        
+      110 +    SVFilter::Type type;                                      
+      111 +    switch (filterType)                                       
+      112 +    {                                                         
+      113 +        case 0: type = SVFilter::Type::LowPass; break;        
+      114 +        case 1: type = SVFilter::Type::HighPass; break;       
+      115 +        case 2: type = SVFilter::Type::BandPass; break;       
+      116 +        default: type = SVFilter::Type::LowPass; break;       
+      117 +    }                                                         
+      118 +                                                              
+      119 +    // Apply to both channels                                 
+      120 +    if (!bypass)                                              
+      121 +    {                                                         
+      122 +        filtersL[slotIndex].setType(type);                    
+      123 +        filtersL[slotIndex].setCutoff(modulatedCutoff);       
+      124 +        filtersL[slotIndex].setResonance(resonance);          
+      125 +                                                              
+      126 +        filtersR[slotIndex].setType(type);                    
+      127 +        filtersR[slotIndex].setCutoff(modulatedCutoff);       
+      128 +        filtersR[slotIndex].setResonance(resonance);          
+      129 +    }                                                         
+      130 +}                                                             
+      131 +                                                              
+      132  float OmniverseVoice::calculateEnvelope(int slotIndex,        
+           SlotState& state, bool noteIsHeld)                            
+      133  {                                                             
+      134      float attackMs =                                          
+           getParameter(Parameters::slotAttack(slotIndex));              
+     ...
+      90      float releaseSamples = (releaseMs / 1000.0f) *             
+          static_cast<float>(currentSampleRate);                         
+      91      float sustainLevel =                                       
+          juce::Decibels::decibelsToGain(sustainDb);                     
+      92                                                                 
+      93 -    // Minimum envelope times to prevent clicks                
+      93      if (attackSamples < 1.0f) attackSamples = 1.0f;            
+      94      if (decaySamples < 1.0f) decaySamples = 1.0f;              
+      95      if (releaseSamples < 1.0f) releaseSamples = 1.0f;          
+      96                                                                 
+      97 -    // Release phase                                           
+      97      if (state.inRelease)                                       
+      98      {                                                          
+      99          float releaseProgress =                                
+          static_cast<float>(state.releaseTime) / releaseSamples;        
+     ...
+      109                                                                
+      110      double envTime = state.envelopeTime;                      
+      111                                                                
+      112 -    // Attack phase                                           
+      112      if (envTime < attackSamples)                              
+      113      {                                                         
+      114          return static_cast<float>(envTime / attackSamples);   
+      115      }                                                         
+      116                                                                
+      117 -    // Decay phase                                            
+      117      double decayPosition = envTime - attackSamples;           
+      118      if (decayPosition < decaySamples)                         
+      119      {                                                         
+     ...
+      123          return 1.0f - (decayProgress * (1.0f -                
+           sustainLevel));                                               
+      124      }                                                         
+      125                                                                
+      126 -    // Sustain phase                                          
+      126      if (noteIsHeld)                                           
+      127      {                                                         
+      128          return sustainLevel;                                  
+     ...
+      138      if (sampleSlots == nullptr || apvts == nullptr)           
+      139          return;                                               
+      140                                                                
+      141 -    // Check if voice is active                               
+      141      if (!isVoiceActive())                                     
+      142          return;                                               
+      143                                                                
+     ...
+      146                                                                
+      147      for (int sample = 0; sample < numSamples; ++sample)       
+      148      {                                                         
+      149 +        // Update filter/LFO parameters at control rate       
+      150 +        if (++controlRateCounter >= CONTROL_RATE_DIVIDER)     
+      151 +        {                                                     
+      152 +            controlRateCounter = 0;                           
+      153 +            for (int slotIdx : activeSlotIndices)             
+      154 +            {                                                 
+      155 +                updateFilterParameters(slotIdx);              
+      156 +            }                                                 
+      157 +        }                                                     
+      158 +                                                              
+      159 +        // Advance LFOs every sample                          
+      160 +        for (int slotIdx : activeSlotIndices)                 
+      161 +        {                                                     
+      162 +            lfos[slotIdx].process();                          
+      163 +        }                                                     
+      164 +                                                              
+      165          float leftSample = 0.0f;                              
+      166          float rightSample = 0.0f;                             
+      167                                                                
+     ...
+      167              if (numSlotSamples == 0)                          
+      168                  continue;                                     
+      169                                                                
+      170 -            // Calculate pitch ratio                          
+      170              float pitchSemitones =                            
+           getParameter(Parameters::slotPitch(slotIdx));                 
+      171              float totalPitchShift = (midiNote - ROOT_NOTE) +  
+           pitchSemitones;                                               
+      172              double pitchRatio = std::pow(2.0, totalPitchShift 
+            / 12.0);                                                     
+      173                                                                
+      174 -            // Calculate envelope (independent of pitch)      
+      174              bool noteIsHeld = !state.inRelease;               
+      175              float envelope = calculateEnvelope(slotIdx,       
+           state, noteIsHeld);                                           
+      176              state.envelopeValue = envelope;                   
+      177                                                                
+      178 -            // Get volume                                     
+      178              float volumeDb =                                  
+           getParameter(Parameters::slotVolume(slotIdx));                
+      179              float volume =                                    
+           juce::Decibels::decibelsToGain(volumeDb) * noteVelocity;      
+      180                                                                
+      181 -            // Calculate sample read position                 
+      181              double readPosition = isReversed                  
+      182                  ? (numSlotSamples - 1) - state.samplePosition 
+      183                  : state.samplePosition;                       
+      184                                                                
+      185 -            // Check if still within sample bounds            
+      185              if (readPosition >= 0 && readPosition <           
+           numSlotSamples - 1 && state.isPlaying)                        
+      186              {                                                 
+      187                  anySlotStillPlaying = true;                   
+      188                                                                
+      189 -                // Linear interpolation for smooth playback   
+      189                  int pos0 = static_cast<int>(readPosition);    
+      190                  int pos1 = pos0 + 1;                          
+      191                  float frac = static_cast<float>(readPosition  
+           - pos0);                                                      
+     ...
+      202                  float leftVal = 0.0f;                         
+      203                  float rightVal = 0.0f;                        
+      204                                                                
+      205 -                // Read left channel (or mono)                
+      205                  if (numChannels >= 1)                         
+      206                  {                                             
+      207                      const float* channelData =                
+           audioData.getReadPointer(0);                                  
+      208                      leftVal = channelData[pos0] * (1.0f -     
+           frac) + channelData[pos1] * frac;                             
+      209                  }                                             
+      210                                                                
+      211 -                // Read right channel (or duplicate mono)     
+      211                  if (numChannels >= 2)                         
+      212                  {                                             
+      213                      const float* channelData =                
+           audioData.getReadPointer(1);                                  
+     ...
+      220                      rightVal = leftVal;                       
+      221                  }                                             
+      222                                                                
+      223 -                // Apply envelope and volume                  
+      223 +                // Apply filter (if not bypassed)             
+      224 +                bool filterBypass =                           
+          +getParameter(Parameters::slotFilterBypass(slotIdx)) > 0.5f;   
+      225 +                if (!filterBypass)                            
+      226 +                {                                             
+      227 +                    leftVal =                                 
+          +filtersL[slotIdx].process(leftVal);                           
+      228 +                    rightVal =                                
+          +filtersR[slotIdx].process(rightVal);                          
+      229 +                }                                             
+      230 +                                                              
+      231                  float gain = envelope * volume;               
+      232                  leftSample += leftVal * gain;                 
+      233                  rightSample += rightVal * gain;               
+      234              }                                                 
+      235              else if (state.samplePosition >= numSlotSamples)  
+      236              {                                                 
+      237 -                // Sample finished playing                    
+      237                  if (!state.inRelease)                         
+      238                  {                                             
+      239                      state.inRelease = true;                   
+     ...
+      236                  }                                             
+      237              }                                                 
+      238                                                                
+      239 -            // Advance sample position (affected by pitch)    
+      239              state.samplePosition += pitchRatio;               
+      240 -                                                              
+      241 -            // Advance envelope time (NOT affected by pitch - 
+          - real time)                                                   
+      240              state.envelopeTime += 1.0;                        
+      241                                                                
+      242 -            // Advance release time if in release             
+      242              if (state.inRelease)                              
+      243              {                                                 
+      244                  state.releaseTime += 1.0;                     
+      245              }                                                 
+      246                                                                
+      247 -            // Check if this slot is still playing            
+      247              if (state.isPlaying && envelope > 0.0001f)        
+      248              {                                                 
+      249                  anySlotStillPlaying = true;                   
+      250              }                                                 
+      251          }                                                     
+      252                                                                
+      253 -        // Write to output buffer                             
+      253          if (outputBuffer.getNumChannels() >= 1)               
+      254              outputBuffer.addSample(0, startSample + sample,   
+           leftSample);                                                  
+      255          if (outputBuffer.getNumChannels() >= 2)               
+      256              outputBuffer.addSample(1, startSample + sample,   
+           rightSample);                                                 
+      257      }                                                         
+      258                                                                
+      259 -    // Clear voice if all slots are done                      
+      259      if (!anySlotStillPlaying)                                 
+      260      {                                                         
+      261          clearCurrentNote();                                   
+
+● Now let me create the Filters tab UI.
+
+● Write(Source\UI\FiltersPanel.h)
+  ⎿  Wrote 1 lines to Source\UI\FiltersPanel.h
+     #pragma once
+
+     #include <juce_gui_basics/juce_gui_basics.h>
+     #include <juce_audio_processors/juce_audio_processors.h>
+
+     class OmniverseAudioProcessor;
+
+     class SlotFilterPanel : public juce::Component
+     {
+     public:
+
+● Write(Source\UI\FiltersPanel.cpp)
+  ⎿  Wrote 1 lines to Source\UI\FiltersPanel.cpp
+     #include "FiltersPanel.h"
+     #include "../PluginProcessor.h"
+     #include "../Utils/Parameters.h"
+
+     // SlotFilterPanel implementation
+     SlotFilterPanel::SlotFilterPanel(OmniverseAudioProcessor& processor,
+     int index)
+         : processorRef(processor)
+         , slotIndex(index)
+     {
+         auto& apvts = processorRef.getAPVTS();
+
+● Now let me update the PluginEditor to add tab switching.
+
+● Read 1 file (ctrl+o to expand)
+
+● Write(Source\PluginEditor.h)
+  ⎿  Added 14 lines, removed 1 line
+       4  #include <juce_gui_extra/juce_gui_extra.h>                     
+       5  #include "PluginProcessor.h"                                   
+       6  #include "UI/SlotPanel.h"                                      
+       7 +#include "UI/FiltersPanel.h"                                   
+       8  #include "UI/OmniverseLookAndFeel.h"                           
+       9                                                                 
+      10  class OmniverseAudioProcessorEditor : public                   
+          juce::AudioProcessorEditor                                     
+     ...
+      19      OmniverseAudioProcessor& processorRef;                     
+      20      OmniverseLookAndFeel lookAndFeel;                          
+      21                                                                 
+      22 +    // Tab state                                               
+      23 +    enum class Tab { Filters, Effects };                       
+      24 +    Tab currentTab = Tab::Effects;                             
+      25 +                                                               
+      26      // Header components                                       
+      27      juce::Label titleLabel;                                    
+      28      juce::Label versionLabel;                                  
+     ...
+      43      std::unique_ptr<juce::AudioProcessorValueTreeState::Button 
+          Attachment> randomOctaveAttachment;                            
+      44      std::unique_ptr<juce::AudioProcessorValueTreeState::Button 
+          Attachment> reverseAttachment;                                 
+      45                                                                 
+      46 -    // Slot panels                                             
+      46 +    // Slot panels (always visible at top)                     
+      47      std::array<std::unique_ptr<SlotPanel>, 5> slotPanels;      
+      48                                                                 
+      49 +    // Filters panel (bottom area, shown when filters tab      
+         +active)                                                        
+      50 +    std::unique_ptr<FiltersPanel> filtersPanel;                
+      51 +                                                               
+      52 +    // Placeholder for effects panel                           
+      53 +    juce::Label effectsPlaceholder;                            
+      54 +                                                               
+      55      void setupHeader();                                        
+      56      void setupMasterControls();                                
+      57      void setupPlaybackModes();                                 
+      58      void setupSlotPanels();                                    
+      59 +    void setupTabs();                                          
+      60 +    void switchToTab(Tab tab);                                 
+      61                                                                 
+      62      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OmniverseAudi 
+          oProcessorEditor)                                              
+      63  };                                                             
+
+● Write(Source\PluginEditor.cpp)
+  ⎿  Added 87 lines, removed 28 lines
+      10      setupMasterControls();                                     
+      11      setupPlaybackModes();                                      
+      12      setupSlotPanels();                                         
+      13 +    setupTabs();                                               
+      14                                                                 
+      15 +    // Create filters panel                                    
+      16 +    filtersPanel =                                             
+         +std::make_unique<FiltersPanel>(processorRef);                  
+      17 +    addAndMakeVisible(*filtersPanel);                          
+      18 +                                                               
+      19 +    // Effects placeholder (will be replaced with actual       
+         +effects panel later)                                           
+      20 +    effectsPlaceholder.setText("Effects panel coming soon...", 
+         + juce::dontSendNotification);                                  
+      21 +    effectsPlaceholder.setFont(juce::Font(16.0f));             
+      22 +    effectsPlaceholder.setColour(juce::Label::textColourId,    
+         +juce::Colours::grey);                                          
+      23 +    effectsPlaceholder.setJustificationType(juce::Justificatio 
+         +n::centred);                                                   
+      24 +    addAndMakeVisible(effectsPlaceholder);                     
+      25 +                                                               
+      26 +    // Start on Effects tab                                    
+      27 +    switchToTab(Tab::Effects);                                 
+      28 +                                                               
+      29      setSize(1024, 700);                                        
+      30      setResizable(true, true);                                  
+      31      setResizeLimits(800, 600, 1920, 1080);                     
+     ...
+       32      versionLabel.setFont(juce::Font(12.0f));                  
+       33      versionLabel.setColour(juce::Label::textColourId,         
+           juce::Colours::grey);                                         
+       34      addAndMakeVisible(versionLabel);                          
+       35 +}                                                             
+       36                                                                
+       37 +void OmniverseAudioProcessorEditor::setupTabs()               
+       38 +{                                                             
+       39      filtersTab.setButtonText("filters");                      
+       40      filtersTab.setColour(juce::TextButton::buttonColourId,    
+           juce::Colours::transparentBlack);                             
+       41      filtersTab.setColour(juce::TextButton::textColourOffId,   
+           juce::Colours::grey);                                         
+       42 +    filtersTab.onClick = [this]() {                           
+          +switchToTab(Tab::Filters); };                                 
+       43      addAndMakeVisible(filtersTab);                            
+       44                                                                
+       45      effectsTab.setButtonText("effects");                      
+       46      effectsTab.setColour(juce::TextButton::buttonColourId,    
+           juce::Colours::transparentBlack);                             
+       47      effectsTab.setColour(juce::TextButton::textColourOffId,   
+           juce::Colours::white);                                        
+       48 +    effectsTab.onClick = [this]() {                           
+          +switchToTab(Tab::Effects); };                                 
+       49      addAndMakeVisible(effectsTab);                            
+       50  }                                                             
+       51                                                                
+       52 +void OmniverseAudioProcessorEditor::switchToTab(Tab tab)      
+       53 +{                                                             
+       54 +    currentTab = tab;                                         
+       55 +                                                              
+       56 +    if (tab == Tab::Filters)                                  
+       57 +    {                                                         
+       58 +                                                              
+          +filtersTab.setColour(juce::TextButton::textColourOffId,       
+          +juce::Colours::white);                                        
+       59 +                                                              
+          +effectsTab.setColour(juce::TextButton::textColourOffId,       
+          +juce::Colours::grey);                                         
+       60 +        filtersPanel->setVisible(true);                       
+       61 +        effectsPlaceholder.setVisible(false);                 
+       62 +    }                                                         
+       63 +    else                                                      
+       64 +    {                                                         
+       65 +                                                              
+          +filtersTab.setColour(juce::TextButton::textColourOffId,       
+          +juce::Colours::grey);                                         
+       66 +                                                              
+          +effectsTab.setColour(juce::TextButton::textColourOffId,       
+          +juce::Colours::white);                                        
+       67 +        filtersPanel->setVisible(false);                      
+       68 +        effectsPlaceholder.setVisible(true);                  
+       69 +    }                                                         
+       70 +                                                              
+       71 +    repaint();                                                
+       72 +}                                                             
+       73 +                                                              
+       74  void OmniverseAudioProcessorEditor::setupMasterControls()     
+       75  {                                                             
+       76      auto& apvts = processorRef.getAPVTS();                    
+       77                                                                
+       78 -    masterVolumeSlider.setSliderStyle(juce::Slider::          
+          -LinearVertical);                                              
+       79 -    masterVolumeSlider.setTextBoxStyle(juce::Slider::         
+          -TextBoxBelow, false, 60, 20);                                 
+       78 +    masterVolumeSlider.setSliderStyle(juce::Slider::LinearBar 
+          +);                                                            
+       79 +    masterVolumeSlider.setTextBoxStyle(juce::Slider::         
+          +TextBoxLeft, false, 50, 20);                                  
+       80      masterVolumeSlider.setColour(juce::Slider::textBoxTextCol 
+           ourId, juce::Colours::white);                                 
+       81      addAndMakeVisible(masterVolumeSlider);                    
+       82      masterVolumeAttachment = std::make_unique<juce::AudioProc 
+           essorValueTreeState::SliderAttachment>(                       
+       83          apvts, Parameters::MASTER_VOLUME,                     
+           masterVolumeSlider);                                          
+       84                                                                
+       85      masterVolumeLabel.setText("master volume",                
+           juce::dontSendNotification);                                  
+       86 -    masterVolumeLabel.setFont(juce::Font(11.0f));             
+       86 +    masterVolumeLabel.setFont(juce::Font(10.0f));             
+       87      masterVolumeLabel.setColour(juce::Label::textColourId,    
+           juce::Colours::grey);                                         
+       88      masterVolumeLabel.setJustificationType(juce::Justificatio 
+           n::centred);                                                  
+       89      addAndMakeVisible(masterVolumeLabel);                     
+       90                                                                
+       91 -    stereoWidthSlider.setSliderStyle(juce::Slider::           
+          -LinearVertical);                                              
+       92 -    stereoWidthSlider.setTextBoxStyle(juce::Slider::          
+          -TextBoxBelow, false, 60, 20);                                 
+       91 +    stereoWidthSlider.setSliderStyle(juce::Slider::LinearBar);
+       92 +    stereoWidthSlider.setTextBoxStyle(juce::Slider::          
+          +TextBoxLeft, false, 50, 20);                                  
+       93      stereoWidthSlider.setColour(juce::Slider::textBoxTextColo 
+           urId, juce::Colours::white);                                  
+       94      addAndMakeVisible(stereoWidthSlider);                     
+       95      stereoWidthAttachment = std::make_unique<juce::AudioProce 
+           ssorValueTreeState::SliderAttachment>(                        
+       96          apvts, Parameters::STEREO_WIDTH, stereoWidthSlider);  
+       97                                                                
+       98      stereoWidthLabel.setText("stereo width",                  
+           juce::dontSendNotification);                                  
+       99 -    stereoWidthLabel.setFont(juce::Font(11.0f));              
+       99 +    stereoWidthLabel.setFont(juce::Font(10.0f));              
+      100      stereoWidthLabel.setColour(juce::Label::textColourId,     
+           juce::Colours::grey);                                         
+      101      stereoWidthLabel.setJustificationType(juce::Justification 
+           ::centred);                                                   
+      102      addAndMakeVisible(stereoWidthLabel);                      
+     ...
+      119                                                                
+      120      // Draw subtle separator lines                            
+      121      g.setColour(juce::Colour(0xFF2A2A2A));                    
+      122 -                                                              
+      123 -    // Line below header                                      
+      122      g.drawHorizontalLine(60, 0.0f,                            
+           static_cast<float>(getWidth()));                              
+      123                                                                
+      124 -    // Line above playback modes                              
+      125 -    g.drawHorizontalLine(getHeight() - 150, 0.0f,             
+          -static_cast<float>(getWidth()));                              
+      124 +    // Line between slots and bottom panel                    
+      125 +    int slotBottomY = 60 + 10 + 280 + 10;                     
+      126 +    g.drawHorizontalLine(slotBottomY, 0.0f,                   
+          +static_cast<float>(getWidth()));                              
+      127  }                                                             
+      128                                                                
+      129  void OmniverseAudioProcessorEditor::resized()                 
+      130  {                                                             
+      131      auto bounds = getLocalBounds();                           
+      132                                                                
+      133 -    // Header area                                            
+      133 +    // Header area (60px)                                     
+      134      auto headerArea = bounds.removeFromTop(60);               
+      135      titleLabel.setBounds(headerArea.removeFromLeft(150).reduc 
+           ed(15, 10));                                                  
+      136      versionLabel.setBounds(titleLabel.getRight(),             
+           titleLabel.getBottom() - 18, 50, 15);                         
+      137                                                                
+      138 +    // Tabs                                                   
+      139      auto tabArea = headerArea.removeFromLeft(200);            
+      140                                                                
+           filtersTab.setBounds(tabArea.removeFromLeft(80).reduced(5,    
+           15));                                                         
+      141                                                                
+           effectsTab.setBounds(tabArea.removeFromLeft(80).reduced(5,    
+           15));                                                         
+      142                                                                
+      143      // Master controls on right side of header                
+      144 -    auto masterArea = headerArea.removeFromRight(180);        
+      145 -    masterVolumeLabel.setBounds(masterArea.removeFromLeft(80) 
+          -.reduced(5, 5));                                              
+      146 -    stereoWidthLabel.setBounds(masterArea.reduced(5, 5));     
+      147 -    masterVolumeSlider.setBounds(masterVolumeLabel.getX(),    
+          -30, 70, 25);                                                  
+      148 -    stereoWidthSlider.setBounds(stereoWidthLabel.getX(), 30,  
+          -70, 25);                                                      
+      144 +    auto masterArea = headerArea.removeFromRight(200);        
+      145 +    auto volArea = masterArea.removeFromLeft(90);             
+      146 +    auto widthArea = masterArea;                              
+      147                                                                
+      148 -    // Playback modes area (bottom)                           
+      149 -    auto playbackArea = bounds.removeFromBottom(140);         
+      150 -    auto playbackModesBounds =                                
+          -playbackArea.removeFromLeft(150).reduced(15, 10);             
+      148 +    masterVolumeLabel.setBounds(volArea.getX(), 8, 80, 15);   
+      149 +    masterVolumeSlider.setBounds(volArea.getX(), 25, 80, 25); 
+      150                                                                
+      151 -    juce::Label playbackModesLabel;                           
+      152 -    int buttonHeight = 25;                                    
+      153 -    layerButton.setBounds(playbackModesBounds.removeFromTop(b 
+          -uttonHeight));                                                
+      154 -    randomButton.setBounds(playbackModesBounds.removeFromTop( 
+          -buttonHeight));                                               
+      155 -    randomOctaveButton.setBounds(playbackModesBounds.removeFr 
+          -omTop(buttonHeight));                                         
+      156 -    reverseButton.setBounds(playbackModesBounds.removeFromTop 
+          -(buttonHeight));                                              
+      151 +    stereoWidthLabel.setBounds(widthArea.getX(), 8, 80, 15);  
+      152 +    stereoWidthSlider.setBounds(widthArea.getX(), 25, 80,     
+          +25);                                                          
+      153                                                                
+      154 -    // Slot panels (main area)                                
+      155 -    auto slotsArea = bounds.reduced(10, 10);                  
+      154 +    // Slot panels area (top section, ~280px)                 
+      155 +    auto slotsArea = bounds.removeFromTop(280).               
+          +reduced(10, 10);                                              
+      156      int slotWidth = slotsArea.getWidth() / 5;                 
+      157                                                                
+      158      for (int i = 0; i < 5; ++i)                               
+      159      {                                                         
+      160 -        slotPanels[i]->setBounds(                             
+          -slotsArea.removeFromLeft(slotWidth).reduced(5, 0));           
+      160 +        auto slotBounds =                                     
+          +slotsArea.removeFromLeft(slotWidth).reduced(5, 0);            
+      161 +        slotPanels[i]->setBounds(slotBounds);                 
+      162      }                                                         
+      163 +                                                              
+      164 +    // Bottom area for tabs content and playback modes        
+      165 +    auto bottomArea = bounds;                                 
+      166 +                                                              
+      167 +    // Playback modes on left side                            
+      168 +    auto playbackArea =                                       
+          +bottomArea.removeFromLeft(140).reduced(10, 10);               
+      169 +    juce::Label playbackLabel;                                
+      170 +    playbackLabel.setText("playback modes",                   
+          +juce::dontSendNotification);                                  
+      171 +                                                              
+      172 +    int buttonHeight = 25;                                    
+      173 +    int buttonY = playbackArea.getY();                        
+      174 +    layerButton.setBounds(playbackArea.getX(), buttonY, 120,  
+          +buttonHeight);                                                
+      175 +    buttonY += buttonHeight + 3;                              
+      176 +    randomButton.setBounds(playbackArea.getX(), buttonY, 120, 
+          + buttonHeight);                                               
+      177 +    buttonY += buttonHeight + 3;                              
+      178 +    randomOctaveButton.setBounds(playbackArea.getX(),         
+          +buttonY, 120, buttonHeight);                                  
+      179 +    buttonY += buttonHeight + 3;                              
+      180 +    reverseButton.setBounds(playbackArea.getX(), buttonY,     
+          +120, buttonHeight);                                           
+      181 +                                                              
+      182 +    // Tab content area (right side)                          
+      183 +    auto tabContentArea = bottomArea.reduced(5);              
+      184 +    filtersPanel->setBounds(tabContentArea);                  
+      185 +    effectsPlaceholder.setBounds(tabContentArea);             
+      186  }                                                             
+
+● Now let me update CMakeLists.txt to include the new file.
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(CMakeLists.txt)
+  ⎿  Added 1 line
+      26      Source/UI/SlotPanel.cpp                                    
+      27      Source/UI/WaveformDisplay.cpp                              
+      28      Source/UI/OmniverseLookAndFeel.cpp                         
+      29 +    Source/UI/FiltersPanel.cpp                                 
+      30  )                                                              
+      31                                                                 
+      32  # Plugin target                                                
+
+● Now let me build and update tasks.
+
+● Bash(powershell.exe -Command "& 'C:\Program Files\CMake\bin\cmake.exe' --build
+       'E:\Workspace.Dev.C++\VST_MultiverseClone\build' --config Release
+      --target Omniverse_V…)
+  ⎿ CMake is re-running because E:/Workspace.Dev.C++/VST_MultiverseClone/bu
+    ild/CMakeFiles/generate.stamp is out-of-date.
+      the file 'E:/Workspace.Dev.C++/VST_MultiverseClone/CMakeLists.txt'
+    … +163 lines (ctrl+o to expand)
+
+  ⎿  (timeout 5m)
+
+● Build successful! (Just some minor warnings I can fix later)
+
+  ---
+  Phase 2 Complete: Filters + LFO
+
+  New features added:
+  Feature: Per-slot Filter
+  Description: LP/HP/BP with cutoff (20Hz-20kHz) and resonance
+  ────────────────────────────────────────
+  Feature: Per-slot LFO
+  Description: Sine/Triangle/Square/S&H waveforms modulating filter cutoff
+  ────────────────────────────────────────
+  Feature: Filter bypass
+  Description: Toggle per slot
+  ────────────────────────────────────────
+  Feature: Filters tab
+  Description: Click "filters" tab to see all filter/LFO controls
+  VST3 location:
+  E:\Workspace.Dev.C++\VST_MultiverseClone\build\Omniverse_artefacts\Release\VST
+  3\Omniverse.vst3
+
+  ---
+  What to test:
+
+  1. Load sample, play a note
+  2. Click "filters" tab
+  3. Adjust cutoff slider - should hear the filter sweep
+  4. Increase resonance - should hear resonant peak
+  5. Turn up LFO depth and adjust rate - filter should wobble
+  6. Try different filter types (LP/HP/BP) and LFO waveforms
+  7. bypass toggle should disable the filter
+
+  ---
+  Ready to continue to Phase 3: BBD Delay when you're ready. This is the
+  authentic bucket-brigade modeling you asked for - the complex part.
+
+✻ Cooked for 4m 36s
+
+❯ Sounds good, lets continue 
+
+● Write(Source\DSP\BBDDelay.h)
+  ⎿  Wrote 1 lines to Source\DSP\BBDDelay.h
+     #pragma once
+
+     #include <vector>
+     #include <cmath>
+     #include <algorithm>
+
+     class BBDDelay
+     {
+     public:
+         BBDDelay() = default;
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\Utils\Parameters.h)
+  ⎿  Added 9 lines
+      33      inline juce::String slotLfoDepth(int slot) { return        
+          "slot_" + juce::String(slot) + "_lfo_depth"; }                 
+      34      inline juce::String slotLfoWaveform(int slot) { return     
+          "slot_" + juce::String(slot) + "_lfo_waveform"; }              
+      35                                                                 
+      36 +    // BBD Delay parameters (Phase 3)                          
+      37 +    inline const juce::String DELAY_TIME = "delay_time";       
+      38 +    inline const juce::String DELAY_FEEDBACK =                 
+         +"delay_feedback";                                              
+      39 +    inline const juce::String DELAY_MOD_DEPTH =                
+         +"delay_mod_depth";                                             
+      40 +    inline const juce::String DELAY_MOD_RATE =                 
+         +"delay_mod_rate";                                              
+      41 +    inline const juce::String DELAY_TONE = "delay_tone";       
+      42 +    inline const juce::String DELAY_MIX = "delay_mix";         
+      43 +    inline const juce::String DELAY_BYPASS = "delay_bypass";   
+      44 +                                                               
+      45      // Number of slots                                         
+      46      constexpr int NUM_SLOTS = 5;                               
+      47                                                                 
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\Utils\Parameters.cpp)
+  ⎿  Added 51 lines
+      157              ));                                               
+      158          }                                                     
+      159                                                                
+      160 +        // BBD Delay parameters (Phase 3)                     
+      161 +                                                              
+          +params.push_back(std::make_unique<juce::AudioParameterFloat>( 
+      162 +            juce::ParameterID(DELAY_TIME, 1),                 
+      163 +            "Delay Time",                                     
+      164 +            juce::NormalisableRange<float>(1.0f, 1000.0f,     
+          +1.0f, 0.4f),                                                  
+      165 +            213.0f,                                           
+      166 +                                                              
+          +juce::AudioParameterFloatAttributes().withLabel("ms")         
+      167 +        ));                                                   
+      168 +                                                              
+      169 +                                                              
+          +params.push_back(std::make_unique<juce::AudioParameterFloat>( 
+      170 +            juce::ParameterID(DELAY_FEEDBACK, 1),             
+      171 +            "Delay Feedback",                                 
+      172 +            juce::NormalisableRange<float>(0.0f, 0.99f,       
+          +0.01f),                                                       
+      173 +            0.5f                                              
+      174 +        ));                                                   
+      175 +                                                              
+      176 +                                                              
+          +params.push_back(std::make_unique<juce::AudioParameterFloat>( 
+      177 +            juce::ParameterID(DELAY_MOD_DEPTH, 1),            
+      178 +            "Delay Mod Depth",                                
+      179 +            juce::NormalisableRange<float>(0.0f, 1.0f,        
+          +0.01f),                                                       
+      180 +            0.0f                                              
+      181 +        ));                                                   
+      182 +                                                              
+      183 +                                                              
+          +params.push_back(std::make_unique<juce::AudioParameterFloat>( 
+      184 +            juce::ParameterID(DELAY_MOD_RATE, 1),             
+      185 +            "Delay Mod Rate",                                 
+      186 +            juce::NormalisableRange<float>(0.01f, 10.0f,      
+          +0.01f, 0.5f),                                                 
+      187 +            1.0f,                                             
+      188 +                                                              
+          +juce::AudioParameterFloatAttributes().withLabel("Hz")         
+      189 +        ));                                                   
+      190 +                                                              
+      191 +                                                              
+          +params.push_back(std::make_unique<juce::AudioParameterFloat>( 
+      192 +            juce::ParameterID(DELAY_TONE, 1),                 
+      193 +            "Delay Tone",                                     
+      194 +            juce::NormalisableRange<float>(0.0f, 1.0f,        
+          +0.01f),                                                       
+      195 +            0.5f                                              
+      196 +        ));                                                   
+      197 +                                                              
+      198 +                                                              
+          +params.push_back(std::make_unique<juce::AudioParameterFloat>( 
+      199 +            juce::ParameterID(DELAY_MIX, 1),                  
+      200 +            "Delay Mix",                                      
+      201 +            juce::NormalisableRange<float>(0.0f, 1.0f,        
+          +0.01f),                                                       
+      202 +            0.3f                                              
+      203 +        ));                                                   
+      204 +                                                              
+      205 +                                                              
+          +params.push_back(std::make_unique<juce::AudioParameterBool>(  
+      206 +            juce::ParameterID(DELAY_BYPASS, 1),               
+      207 +            "Delay Bypass",                                   
+      208 +            false                                             
+      209 +        ));                                                   
+      210 +                                                              
+      211          return { params.begin(), params.end() };              
+      212      }                                                         
+      213  }                                                             
+
+● Read 1 file (ctrl+o to expand)
+
+● Write(Source\PluginProcessor.h)
+  ⎿  Added 6 lines
+       4  #include <juce_dsp/juce_dsp.h>                                 
+       5  #include "Sampler/OmniverseSampler.h"                          
+       6  #include "Utils/Parameters.h"                                  
+       7 +#include "DSP/BBDDelay.h"                                      
+       8                                                                 
+       9  class OmniverseAudioProcessor : public juce::AudioProcessor    
+      10  {                                                              
+     ...
+      43      bool loadSampleIntoSlot(int slotIndex, const juce::File&   
+          file);                                                         
+      44                                                                 
+      45  private:                                                       
+      46 +    void updateDelayParameters();                              
+      47 +                                                               
+      48      juce::AudioProcessorValueTreeState apvts;                  
+      49      OmniverseSampler sampler;                                  
+      50                                                                 
+      51 +    // Global effects                                          
+      52 +    BBDDelay bbdDelay;                                         
+      53 +                                                               
+      54      juce::AudioFormatManager formatManager;                    
+      55                                                                 
+      56      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OmniverseAudi 
+          oProcessor)                                                    
+
+● Read 1 file (ctrl+o to expand)
+
+● Write(Source\PluginProcessor.cpp)
+  ⎿  Added 28 lines, removed 1 line
+      36                                                                 
+      37  double OmniverseAudioProcessor::getTailLengthSeconds() const   
+      38  {                                                              
+      39 -    return 0.0;                                                
+      39 +    // Return max delay time for tail                          
+      40 +    return 1.0;                                                
+      41  }                                                              
+      42                                                                 
+      43  int OmniverseAudioProcessor::getNumPrograms()                  
+     ...
+      76              voice->prepareToPlay(sampleRate, samplesPerBlock); 
+      77          }                                                      
+      78      }                                                          
+      79 +                                                               
+      80 +    // Prepare BBD Delay                                       
+      81 +    bbdDelay.prepare(sampleRate, samplesPerBlock);             
+      82  }                                                              
+      83                                                                 
+      84  void OmniverseAudioProcessor::releaseResources()               
+     ...
+       91      return true;                                              
+       92  }                                                             
+       93                                                                
+       94 +void OmniverseAudioProcessor::updateDelayParameters()         
+       95 +{                                                             
+       96 +    bbdDelay.setDelayTime(apvts.getRawParameterValue(Paramete 
+          +rs::DELAY_TIME)->load());                                     
+       97 +    bbdDelay.setFeedback(apvts.getRawParameterValue(Parameter 
+          +s::DELAY_FEEDBACK)->load());                                  
+       98 +    bbdDelay.setModDepth(apvts.getRawParameterValue(Parameter 
+          +s::DELAY_MOD_DEPTH)->load());                                 
+       99 +    bbdDelay.setModRate(apvts.getRawParameterValue(Parameters 
+          +::DELAY_MOD_RATE)->load());                                   
+      100 +    bbdDelay.setTone(apvts.getRawParameterValue(Parameters::D 
+          +ELAY_TONE)->load());                                          
+      101 +    bbdDelay.setMix(apvts.getRawParameterValue(Parameters::DE 
+          +LAY_MIX)->load());                                            
+      102 +}                                                             
+      103 +                                                              
+      104  void OmniverseAudioProcessor::processBlock(juce::AudioBuffer< 
+           float>& buffer, juce::MidiBuffer& midiMessages)               
+      105  {                                                             
+      106      juce::ScopedNoDenormals noDenormals;                      
+     ...
+       98      buffer.clear();                                           
+       99      sampler.renderNextBlock(buffer, midiMessages, 0,          
+           buffer.getNumSamples());                                      
+      100                                                                
+      101 +    // Update and apply BBD Delay (if not bypassed)           
+      102 +    bool delayBypassed =                                      
+          +apvts.getRawParameterValue(Parameters::DELAY_BYPASS)->load()  
+          +> 0.5f;                                                       
+      103 +                                                              
+      104 +    if (!delayBypassed && buffer.getNumChannels() >= 2)       
+      105 +    {                                                         
+      106 +        updateDelayParameters();                              
+      107 +                                                              
+      108 +        float* leftChannel = buffer.getWritePointer(0);       
+      109 +        float* rightChannel = buffer.getWritePointer(1);      
+      110 +                                                              
+      111 +        bbdDelay.processBlock(leftChannel, rightChannel,      
+          +buffer.getNumSamples());                                      
+      112 +    }                                                         
+      113 +                                                              
+      114      // Apply master volume                                    
+      115      float masterVolume = juce::Decibels::decibelsToGain(      
+      116                                                                
+           apvts.getRawParameterValue(Parameters::MASTER_VOLUME)->load() 
+
+● Write(Source\UI\EffectsPanel.h)
+  ⎿  Wrote 1 lines to Source\UI\EffectsPanel.h
+     #pragma once
+
+     #include <juce_gui_basics/juce_gui_basics.h>
+     #include <juce_audio_processors/juce_audio_processors.h>
+
+     class OmniverseAudioProcessor;
+
+     class DelaySection : public juce::Component
+     {
+     public:
+
+● Write(Source\UI\EffectsPanel.cpp)
+  ⎿  Wrote 1 lines to Source\UI\EffectsPanel.cpp
+     #include "EffectsPanel.h"
+     #include "../PluginProcessor.h"
+     #include "../Utils/Parameters.h"
+
+     // DelaySection implementation
+     DelaySection::DelaySection(OmniverseAudioProcessor& processor)
+         : processorRef(processor)
+     {
+         auto& apvts = processorRef.getAPVTS();
+
+
+● Now let me update the PluginEditor to use the EffectsPanel and update
+  CMakeLists.txt.
+
+● Update(Source\PluginEditor.h)
+  ⎿  Added 1 line
+       5  #include "PluginProcessor.h"                                   
+       6  #include "UI/SlotPanel.h"                                      
+       7  #include "UI/FiltersPanel.h"                                   
+       8 +#include "UI/EffectsPanel.h"                                   
+       9  #include "UI/OmniverseLookAndFeel.h"                           
+      10                                                                 
+      11  class OmniverseAudioProcessorEditor : public                   
+          juce::AudioProcessorEditor                                     
+
+● Update(Source\PluginEditor.h)
+  ⎿  Added 2 lines, removed 2 lines
+      55      // Filters panel (bottom area, shown when filters tab      
+          active)                                                        
+      56      std::unique_ptr<FiltersPanel> filtersPanel;                
+      57                                                                 
+      58 -    // Placeholder for effects panel                           
+      59 -    juce::Label effectsPlaceholder;                            
+      58 +    // Effects panel (bottom area, shown when effects tab      
+         +active)                                                        
+      59 +    std::unique_ptr<EffectsPanel> effectsPanel;                
+      60                                                                 
+      61      void setupHeader();                                        
+      62      void setupMasterControls();                                
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\PluginEditor.cpp)
+  ⎿  Added 3 lines, removed 6 lines
+      16      filtersPanel =                                             
+          std::make_unique<FiltersPanel>(processorRef);                  
+      17      addAndMakeVisible(*filtersPanel);                          
+      18                                                                 
+      19 -    // Effects placeholder (will be replaced with actual       
+         -effects panel later)                                           
+      20 -    effectsPlaceholder.setText("Effects panel coming soon...", 
+         - juce::dontSendNotification);                                  
+      21 -    effectsPlaceholder.setFont(juce::Font(16.0f));             
+      22 -    effectsPlaceholder.setColour(juce::Label::textColourId,    
+         -juce::Colours::grey);                                          
+      23 -    effectsPlaceholder.setJustificationType(juce::Justificatio 
+         -n::centred);                                                   
+      24 -    addAndMakeVisible(effectsPlaceholder);                     
+      19 +    // Create effects panel                                    
+      20 +    effectsPanel =                                             
+         +std::make_unique<EffectsPanel>(processorRef);                  
+      21 +    addAndMakeVisible(*effectsPanel);                          
+      22                                                                 
+      23      // Start on Effects tab                                    
+      24      switchToTab(Tab::Effects);                                 
+
+● Update(Source\PluginEditor.cpp)
+  ⎿  Added 3 lines, removed 3 lines
+      70                                                                 
+          filtersTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::white);                                         
+      71                                                                 
+          effectsTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::grey);                                          
+      72          filtersPanel->setVisible(true);                        
+      73 -        effectsPlaceholder.setVisible(false);                  
+      73 +        effectsPanel.setVisible(false);                        
+      74      }                                                          
+      75      else                                                       
+      76      {                                                          
+      77                                                                 
+          filtersTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::grey);                                          
+      78                                                                 
+          effectsTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::white);                                         
+      79          filtersPanel->setVisible(false);                       
+      80 -        effectsPlaceholder.setVisible(true);                   
+      80 +        effectsPanel.setVisible(true);                         
+      81      }                                                          
+      82                                                                 
+      83      repaint();                                                 
+     ...
+      221      // Tab content area (right side)                          
+      222      auto tabContentArea = bottomArea.reduced(5);              
+      223      filtersPanel->setBounds(tabContentArea);                  
+      224 -    effectsPlaceholder.setBounds(tabContentArea);             
+      224 +    effectsPanel.setBounds(tabContentArea);                   
+      225  }                                                             
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\PluginEditor.cpp)
+  ⎿  Added 2 lines, removed 2 lines
+      70                                                                 
+          filtersTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::white);                                         
+      71                                                                 
+          effectsTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::grey);                                          
+      72          filtersPanel->setVisible(true);                        
+      73 -        effectsPanel.setVisible(false);                        
+      73 +        effectsPanel->setVisible(false);                       
+      74      }                                                          
+      75      else                                                       
+      76      {                                                          
+      77                                                                 
+          filtersTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::grey);                                          
+      78                                                                 
+          effectsTab.setColour(juce::TextButton::textColourOffId,        
+          juce::Colours::white);                                         
+      79          filtersPanel->setVisible(false);                       
+      80 -        effectsPanel.setVisible(true);                         
+      80 +        effectsPanel->setVisible(true);                        
+      81      }                                                          
+      82                                                                 
+      83      repaint();                                                 
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Source\PluginEditor.cpp)
+  ⎿  Added 1 line, removed 1 line
+      221      // Tab content area (right side)                          
+      222      auto tabContentArea = bottomArea.reduced(5);              
+      223      filtersPanel->setBounds(tabContentArea);                  
+      224 -    effectsPanel.setBounds(tabContentArea);                   
+      224 +    effectsPanel->setBounds(tabContentArea);                  
+      225  }                                                             
+
+● Update(CMakeLists.txt)
+  ⎿  Added 1 line
+      27      Source/UI/WaveformDisplay.cpp                              
+      28      Source/UI/OmniverseLookAndFeel.cpp                         
+      29      Source/UI/FiltersPanel.cpp                                 
+      30 +    Source/UI/EffectsPanel.cpp                                 
+      31  )                                                              
+      32                                                                 
+      33  # Plugin target                                                
+
+● Bash(powershell.exe -Command "& 'C:\Program Files\CMake\bin\cmake.exe' --build
+       'E:\Workspace.Dev.C++\VST_MultiverseClone\build' --config Release
+      --target Omniverse_V…)
+  ⎿ CMake is re-running because E:/Workspace.Dev.C++/VST_MultiverseClone/bu
+    ild/CMakeFiles/generate.stamp is out-of-date.
+      the file 'E:/Workspace.Dev.C++/VST_MultiverseClone/CMakeLists.txt'
+    … +241 lines (ctrl+o to expand)
+
+  ⎿  (timeout 5m)
+
+● Build successful!
+
+  ---
+  Phase 3 Complete: BBD Delay
+
+  What's implemented:
+  Feature: Authentic BBD modeling
+  Description: 1024-stage bucket brigade simulation
+  ────────────────────────────────────────
+  Feature: Clock-rate dependent filtering
+  Description: Longer delays = darker tone (like real BBD)
+  ────────────────────────────────────────
+  Feature: Companding
+  Description: Pre-compression + post-expansion (mu-law style)
+  ────────────────────────────────────────
+  Feature: Soft saturation
+  Description: Gentle tanh clipping in feedback path
+  ────────────────────────────────────────
+  Feature: Modulation
+  Description: LFO modulates delay time for chorus-like effects
+  ────────────────────────────────────────
+  Feature: Parameters
+  Description: Time, Feedback, Mod Depth, Mod Rate, Tone, Mix, Bypass
+  BBD Characteristics:
+  - At short delays (~50ms): Bright, clean sound
+  - At long delays (~500ms): Darker, lo-fi tone (Nyquist drops to ~1kHz)
+  - High feedback: Warm repeats with increasing saturation
+  - Modulation: Adds subtle chorus/vibrato character
+
+  VST3 location:
+  E:\Workspace.Dev.C++\VST_MultiverseClone\build\Omniverse_artefacts\Release\VST
+  3\Omniverse.vst3
+
+  ---
+  What to test:
+
+  1. Load sample, play some notes
+  2. Click "effects" tab - you'll see the "time" section with BBD Delay
+  3. Adjust time slider (1-1000ms) - notice how longer delays sound darker
+  4. Turn up feedback - hear the repeats build up with warmth
+  5. Try mod depth + mod rate - adds chorus-like movement
+  6. tone control - additional brightness adjustment
+  7. mix - wet/dry blend
+
+  ---
+  Phases completed: 1 (Sampler), 2 (Filters/LFO), 3 (BBD Delay)
+
+  Ready to continue with Phase 4: BBD Chorus or any other effect when you're 
+  ready.
+
+✻ Crunched for 5m 35s

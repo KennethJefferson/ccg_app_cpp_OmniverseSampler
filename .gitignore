@@ -1,0 +1,113 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# IDE
+.vs/
+.vscode/
+*.vcxproj*
+*.sln
+*.suo
+*.user
+*.ncb
+*.aps
+.idea/
+*.iml
+
+# JUCE
+Builds/
+JuceLibraryCode/
+
+# Compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.exe
+*.out
+*.app
+*.vst3
+*.component
+*.au
+
+# Dependencies (fetched by CMake)
+_deps/
+
+# Logs and databases
+*.log
+*.sqlite
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Debug
+*.pdb
+*.ilk
+*.exp
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+install_manifest.txt
+CTestTestfile.cmake
+
+# Visual Studio
+Debug/
+Release/
+x64/
+x86/
+Win32/
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.opendb
+ipch/
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+
+# Audio test files (don't commit samples)
+*.wav
+*.aiff
+*.aif
+*.mp3
+*.flac
+*.ogg
+
+# Except keep example/test files if needed
+# !samples/example.wav
