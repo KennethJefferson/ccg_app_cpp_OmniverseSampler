@@ -32,6 +32,10 @@ public:
 
     float process(float input)
     {
+        // Sanitize input
+        if (!std::isfinite(input))
+            return 0.0f;
+
         // Clamp cutoff to valid range
         float freq = std::clamp(cutoffHz, 20.0f, static_cast<float>(sampleRate * 0.49));
 
@@ -55,18 +59,29 @@ public:
         ic1eq = 2.0f * v1 - ic1eq;
         ic2eq = 2.0f * v2 - ic2eq;
 
+        // Protect filter state from corruption
+        if (!std::isfinite(ic1eq)) ic1eq = 0.0f;
+        if (!std::isfinite(ic2eq)) ic2eq = 0.0f;
+
         // Output based on filter type
+        float output;
         switch (type)
         {
             case Type::LowPass:
-                return v2;
+                output = v2;
+                break;
             case Type::HighPass:
-                return input - k * v1 - v2;
+                output = input - k * v1 - v2;
+                break;
             case Type::BandPass:
-                return v1;
+                output = v1;
+                break;
             default:
-                return v2;
+                output = v2;
+                break;
         }
+
+        return std::isfinite(output) ? output : input;
     }
 
 private:

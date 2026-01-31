@@ -244,9 +244,9 @@ void OmniverseVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
             float inPointPercent = getParameter(Parameters::slotInPoint(slotIdx));
             float outPointPercent = getParameter(Parameters::slotOutPoint(slotIdx));
 
-            // Ensure in < out
-            if (inPointPercent >= outPointPercent)
-                outPointPercent = inPointPercent + 0.1f;
+            // Ensure in < out with minimum 1% gap
+            if (outPointPercent <= inPointPercent + 1.0f)
+                outPointPercent = inPointPercent + 1.0f;
 
             // Calculate sample positions for in/out points
             int inSample = static_cast<int>((inPointPercent / 100.0f) * numSlotSamples);
@@ -256,7 +256,13 @@ void OmniverseVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
             inSample = std::clamp(inSample, 0, numSlotSamples - 1);
             outSample = std::clamp(outSample, inSample + 1, numSlotSamples);
 
+            // Enforce minimum playable length (at least 64 samples to prevent clicks)
             int playableLength = outSample - inSample;
+            if (playableLength < 64)
+            {
+                outSample = std::min(inSample + 64, numSlotSamples);
+                playableLength = outSample - inSample;
+            }
 
             float pitchSemitones = getParameter(Parameters::slotPitch(slotIdx));
             float totalPitchShift = (midiNote - ROOT_NOTE) + pitchSemitones;
@@ -328,6 +334,10 @@ void OmniverseVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
                 float gain = envelope * volume;
                 leftSample += leftVal * gain;
                 rightSample += rightVal * gain;
+
+                // Sanitize to prevent NaN/Inf propagation
+                if (!std::isfinite(leftSample)) leftSample = 0.0f;
+                if (!std::isfinite(rightSample)) rightSample = 0.0f;
             }
             else if (state.samplePosition >= playableLength)
             {
@@ -346,6 +356,14 @@ void OmniverseVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
             if (state.inRelease)
             {
                 state.releaseTime += 1.0;
+            }
+
+            // Check for loop mode
+            bool loopEnabled = getParameter(Parameters::slotLoop(slotIdx)) > 0.5f;
+            if (loopEnabled && !state.inRelease && state.samplePosition >= playableLength)
+            {
+                // Loop back to start of playable region
+                state.samplePosition = std::fmod(state.samplePosition, static_cast<double>(playableLength));
             }
 
             if (state.isPlaying && envelope > 0.0001f)

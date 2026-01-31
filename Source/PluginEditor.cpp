@@ -171,11 +171,15 @@ void OmniverseAudioProcessorEditor::resized()
 
     // Header area (60px)
     auto headerArea = bounds.removeFromTop(60);
-    titleLabel.setBounds(headerArea.removeFromLeft(150).reduced(15, 10));
-    versionLabel.setBounds(titleLabel.getRight(), titleLabel.getBottom() - 18, 50, 15);
 
-    // Tabs
-    auto tabArea = headerArea.removeFromLeft(200);
+    // Title and version stacked
+    auto titleArea = headerArea.removeFromLeft(120);
+    titleLabel.setBounds(titleArea.getX() + 15, 10, 100, 30);
+    versionLabel.setBounds(titleArea.getX() + 18, 38, 50, 15);
+
+    // Tabs (with some spacing from title)
+    headerArea.removeFromLeft(10);
+    auto tabArea = headerArea.removeFromLeft(180);
     filtersTab.setBounds(tabArea.removeFromLeft(80).reduced(5, 15));
     effectsTab.setBounds(tabArea.removeFromLeft(80).reduced(5, 15));
 

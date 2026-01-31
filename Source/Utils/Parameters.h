@@ -23,6 +23,7 @@ namespace Parameters
     inline juce::String slotRelease(int slot) { return "slot_" + juce::String(slot) + "_release"; }
     inline juce::String slotInPoint(int slot) { return "slot_" + juce::String(slot) + "_in_point"; }
     inline juce::String slotOutPoint(int slot) { return "slot_" + juce::String(slot) + "_out_point"; }
+    inline juce::String slotLoop(int slot) { return "slot_" + juce::String(slot) + "_loop"; }
 
     // Filter parameters (Phase 2)
     inline juce::String slotFilterType(int slot) { return "slot_" + juce::String(slot) + "_filter_type"; }

@@ -28,6 +28,10 @@ public:
     {
         for (int i = 0; i < numSamples; ++i)
         {
+            // Sanitize input
+            if (!std::isfinite(left[i])) left[i] = 0.0f;
+            if (!std::isfinite(right[i])) right[i] = 0.0f;
+
             float dryL = left[i];
             float dryR = right[i];
 
@@ -67,8 +71,12 @@ public:
             wetR *= outputComp;
 
             // === MIX ===
-            left[i] = dryL * (1.0f - mix) + wetL * mix;
-            right[i] = dryR * (1.0f - mix) + wetR * mix;
+            float outL = dryL * (1.0f - mix) + wetL * mix;
+            float outR = dryR * (1.0f - mix) + wetR * mix;
+
+            // Final sanitization
+            left[i] = std::isfinite(outL) ? outL : dryL;
+            right[i] = std::isfinite(outR) ? outR : dryR;
         }
     }
 
@@ -125,6 +133,9 @@ private:
         tapeHpState1L = tapeHpState1L + g * (input - tapeHpState1L);
         tapeHpState2L = tapeHpState2L + g * (tapeHpState1L - tapeHpState2L);
 
+        if (!std::isfinite(tapeHpState1L)) tapeHpState1L = 0.0f;
+        if (!std::isfinite(tapeHpState2L)) tapeHpState2L = 0.0f;
+
         return tapeHpState2L;
     }
 
@@ -135,6 +146,9 @@ private:
 
         tapeHpState1R = tapeHpState1R + g * (input - tapeHpState1R);
         tapeHpState2R = tapeHpState2R + g * (tapeHpState1R - tapeHpState2R);
+
+        if (!std::isfinite(tapeHpState1R)) tapeHpState1R = 0.0f;
+        if (!std::isfinite(tapeHpState2R)) tapeHpState2R = 0.0f;
 
         return tapeHpState2R;
     }

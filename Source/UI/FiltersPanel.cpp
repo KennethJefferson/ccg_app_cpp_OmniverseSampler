@@ -39,11 +39,16 @@ SlotFilterPanel::SlotFilterPanel(OmniverseAudioProcessor& processor, int index)
     createSlider(resonanceSlider, Parameters::slotFilterResonance(slotIndex), resonanceAttachment);
     createLabel(resonanceLabel, "resonance");
 
-    bypassButton.setButtonText("bypass");
-    bypassButton.setColour(juce::ToggleButton::textColourId, juce::Colours::grey);
-    addAndMakeVisible(bypassButton);
-    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-        apvts, Parameters::slotFilterBypass(slotIndex), bypassButton);
+    // Power button (pink when ON/not bypassed, dim when OFF/bypassed)
+    powerButton.setButtonText("ON");
+    powerButton.setClickingTogglesState(true);
+    powerButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xFFFF006E));
+    powerButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xFF2A2A2A));
+    powerButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    powerButton.setColour(juce::TextButton::textColourOnId, juce::Colours::grey);
+    addAndMakeVisible(powerButton);
+    powerAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        apvts, Parameters::slotFilterBypass(slotIndex), powerButton);
 
     // LFO section
     lfoLabel.setText("lfo", juce::dontSendNotification);
@@ -126,8 +131,8 @@ void SlotFilterPanel::resized()
     resonanceSlider.setBounds(resRow);
     bounds.removeFromTop(3);
 
-    bypassButton.setBounds(bounds.removeFromTop(20));
-    bounds.removeFromTop(10);
+    powerButton.setBounds(bounds.removeFromTop(22).removeFromLeft(50));
+    bounds.removeFromTop(8);
 
     // LFO section
     lfoLabel.setBounds(bounds.removeFromTop(15));

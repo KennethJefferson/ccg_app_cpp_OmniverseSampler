@@ -223,6 +223,22 @@ void OmniverseAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juc
             rightChannel[i] = mid - side;
         }
     }
+
+    // Final safety pass: sanitize and soft-clip output
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
+    {
+        auto* channelData = buffer.getWritePointer(channel);
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            // Replace NaN/Inf with silence
+            if (!std::isfinite(channelData[i]))
+                channelData[i] = 0.0f;
+
+            // Soft clip to prevent harsh digital clipping
+            if (std::abs(channelData[i]) > 1.0f)
+                channelData[i] = std::tanh(channelData[i]);
+        }
+    }
 }
 
 bool OmniverseAudioProcessor::hasEditor() const

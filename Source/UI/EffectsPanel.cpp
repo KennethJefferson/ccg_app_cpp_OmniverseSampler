@@ -45,12 +45,18 @@ DelaySection::DelaySection(OmniverseAudioProcessor& processor)
     createSlider(mixSlider, Parameters::DELAY_MIX, mixAttachment);
     createLabel(mixLabel, "mix");
 
-    // Bypass
-    bypassButton.setButtonText("bypass");
-    bypassButton.setColour(juce::ToggleButton::textColourId, juce::Colours::grey);
-    addAndMakeVisible(bypassButton);
-    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-        apvts, Parameters::DELAY_BYPASS, bypassButton);
+    // Power button (pink when ON/not bypassed, dim when OFF/bypassed)
+    powerButton.setButtonText("ON");
+    powerButton.setClickingTogglesState(true);
+    // When bypass=false (toggle OFF), effect is ON - show pink
+    powerButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xFFFF006E));
+    // When bypass=true (toggle ON), effect is OFF - show dim
+    powerButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xFF2A2A2A));
+    powerButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    powerButton.setColour(juce::TextButton::textColourOnId, juce::Colours::grey);
+    addAndMakeVisible(powerButton);
+    powerAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        apvts, Parameters::DELAY_BYPASS, powerButton);
 }
 
 void DelaySection::createSlider(juce::Slider& slider, const juce::String& paramId,
@@ -128,8 +134,8 @@ void DelaySection::resized()
     mixLabel.setBounds(mixRow.removeFromTop(12));
     mixSlider.setBounds(mixRow);
 
-    // Bypass at bottom
-    bypassButton.setBounds(leftCol.removeFromTop(25));
+    // Power button at bottom
+    powerButton.setBounds(leftCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // ChorusSection implementation
@@ -166,12 +172,16 @@ ChorusSection::ChorusSection(OmniverseAudioProcessor& processor)
     createSlider(mixSlider, Parameters::CHORUS_MIX, mixAttachment);
     createLabel(mixLabel, "mix");
 
-    // Bypass
-    bypassButton.setButtonText("bypass");
-    bypassButton.setColour(juce::ToggleButton::textColourId, juce::Colours::grey);
-    addAndMakeVisible(bypassButton);
-    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-        apvts, Parameters::CHORUS_BYPASS, bypassButton);
+    // Power button (pink when ON/not bypassed, dim when OFF/bypassed)
+    powerButton.setButtonText("ON");
+    powerButton.setClickingTogglesState(true);
+    powerButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xFFFF006E));
+    powerButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xFF2A2A2A));
+    powerButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    powerButton.setColour(juce::TextButton::textColourOnId, juce::Colours::grey);
+    addAndMakeVisible(powerButton);
+    powerAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        apvts, Parameters::CHORUS_BYPASS, powerButton);
 }
 
 void ChorusSection::createSlider(juce::Slider& slider, const juce::String& paramId,
@@ -241,8 +251,8 @@ void ChorusSection::resized()
     mixLabel.setBounds(mixRow.removeFromTop(12));
     mixSlider.setBounds(mixRow);
 
-    // Bypass at bottom
-    bypassButton.setBounds(leftCol.removeFromTop(25));
+    // Power button at bottom
+    powerButton.setBounds(leftCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // TapeSaturationSection implementation
@@ -278,12 +288,16 @@ TapeSaturationSection::TapeSaturationSection(OmniverseAudioProcessor& processor)
     createSlider(mixSlider, Parameters::TAPE_MIX, mixAttachment);
     createLabel(mixLabel, "mix");
 
-    // Bypass
-    bypassButton.setButtonText("bypass");
-    bypassButton.setColour(juce::ToggleButton::textColourId, juce::Colours::grey);
-    addAndMakeVisible(bypassButton);
-    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-        apvts, Parameters::TAPE_BYPASS, bypassButton);
+    // Power button (pink when ON/not bypassed, dim when OFF/bypassed)
+    powerButton.setButtonText("ON");
+    powerButton.setClickingTogglesState(true);
+    powerButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xFFFF006E));
+    powerButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xFF2A2A2A));
+    powerButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    powerButton.setColour(juce::TextButton::textColourOnId, juce::Colours::grey);
+    addAndMakeVisible(powerButton);
+    powerAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        apvts, Parameters::TAPE_BYPASS, powerButton);
 }
 
 void TapeSaturationSection::createSlider(juce::Slider& slider, const juce::String& paramId,
@@ -353,8 +367,8 @@ void TapeSaturationSection::resized()
     mixLabel.setBounds(mixRow.removeFromTop(12));
     mixSlider.setBounds(mixRow);
 
-    // Bypass at bottom
-    bypassButton.setBounds(leftCol.removeFromTop(25));
+    // Power button at bottom
+    powerButton.setBounds(leftCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // SpectralFilterSection implementation
@@ -397,12 +411,16 @@ SpectralFilterSection::SpectralFilterSection(OmniverseAudioProcessor& processor)
     createSlider(mixSlider, Parameters::SPECTRAL_MIX, mixAttachment);
     createLabel(mixLabel, "mix");
 
-    // Bypass
-    bypassButton.setButtonText("bypass");
-    bypassButton.setColour(juce::ToggleButton::textColourId, juce::Colours::grey);
-    addAndMakeVisible(bypassButton);
-    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-        apvts, Parameters::SPECTRAL_BYPASS, bypassButton);
+    // Power button (pink when ON/not bypassed, dim when OFF/bypassed)
+    powerButton.setButtonText("ON");
+    powerButton.setClickingTogglesState(true);
+    powerButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xFFFF006E));
+    powerButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xFF2A2A2A));
+    powerButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    powerButton.setColour(juce::TextButton::textColourOnId, juce::Colours::grey);
+    addAndMakeVisible(powerButton);
+    powerAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        apvts, Parameters::SPECTRAL_BYPASS, powerButton);
 }
 
 void SpectralFilterSection::createSlider(juce::Slider& slider, const juce::String& paramId,
@@ -476,8 +494,8 @@ void SpectralFilterSection::resized()
     mixLabel.setBounds(mixRow.removeFromTop(11));
     mixSlider.setBounds(mixRow);
 
-    // Bypass at bottom
-    bypassButton.setBounds(rightCol.removeFromTop(25));
+    // Power button at bottom
+    powerButton.setBounds(rightCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // EffectsPanel implementation

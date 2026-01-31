@@ -53,6 +53,17 @@ SlotPanel::SlotPanel(OmniverseAudioProcessor& processor, int index)
     outPointSlider.setTextValueSuffix("%");
     createLabel(outPointLabel, "out");
 
+    // Loop button (power button style)
+    loopButton.setButtonText("LOOP");
+    loopButton.setClickingTogglesState(true);
+    loopButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xFF2A2A2A));
+    loopButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xFFFF006E));
+    loopButton.setColour(juce::TextButton::textColourOffId, juce::Colours::grey);
+    loopButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    addAndMakeVisible(loopButton);
+    loopAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        processorRef.getAPVTS(), Parameters::slotLoop(slotIndex), loopButton);
+
     // Update waveform display
     waveformDisplay.setSampleSlot(processorRef.getSampler().getSlot(slotIndex));
     waveformDisplay.setParameterReferences(&processorRef.getAPVTS(), slotIndex);
@@ -115,11 +126,13 @@ void SlotPanel::resized()
     bounds.removeFromTop(4);
 
     // In/Out section (below waveform)
-    inOutLabel.setBounds(bounds.removeFromTop(14));
+    auto inOutHeader = bounds.removeFromTop(14);
+    int halfWidth = bounds.getWidth() / 2;
+    inOutLabel.setBounds(inOutHeader.removeFromLeft(halfWidth - 20));
+    loopButton.setBounds(inOutHeader.removeFromRight(45).reduced(0, 0));
     bounds.removeFromTop(1);
 
     auto inOutRow = bounds.removeFromTop(26);
-    int halfWidth = bounds.getWidth() / 2;
     auto inArea = inOutRow.removeFromLeft(halfWidth);
     auto outArea = inOutRow;
 

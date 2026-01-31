@@ -29,7 +29,7 @@ private:
     juce::Slider modRateSlider;
     juce::Slider toneSlider;
     juce::Slider mixSlider;
-    juce::ToggleButton bypassButton;
+    juce::TextButton powerButton;
 
     juce::Label timeLabel;
     juce::Label feedbackLabel;
@@ -44,7 +44,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> modRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerAttachment;
 };
 
 class ChorusSection : public juce::Component
@@ -69,7 +69,7 @@ private:
     juce::Slider depthSlider;
     juce::Slider toneSlider;
     juce::Slider mixSlider;
-    juce::ToggleButton bypassButton;
+    juce::TextButton powerButton;
 
     juce::Label rateLabel;
     juce::Label depthLabel;
@@ -80,7 +80,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> depthAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerAttachment;
 };
 
 class TapeSaturationSection : public juce::Component
@@ -105,7 +105,7 @@ private:
     juce::Slider compressionSlider;
     juce::Slider toneSlider;
     juce::Slider mixSlider;
-    juce::ToggleButton bypassButton;
+    juce::TextButton powerButton;
 
     juce::Label driveLabel;
     juce::Label compressionLabel;
@@ -116,7 +116,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> compressionAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerAttachment;
 };
 
 class SpectralFilterSection : public juce::Component
@@ -142,7 +142,7 @@ private:
     juce::Slider highSlider;
     juce::Slider spreadSlider;
     juce::Slider mixSlider;
-    juce::ToggleButton bypassButton;
+    juce::TextButton powerButton;
 
     juce::Label lowLabel;
     juce::Label midLabel;
@@ -155,7 +155,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> highAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> spreadAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerAttachment;
 };
 
 class EffectsPanel : public juce::Component

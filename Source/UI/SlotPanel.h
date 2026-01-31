@@ -59,6 +59,9 @@ private:
     juce::Label inPointLabel;
     juce::Label outPointLabel;
 
+    // Loop button (power button style)
+    juce::TextButton loopButton;
+
     // APVTS Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> pitchAttachment;
@@ -68,6 +71,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> inPointAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outPointAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> loopAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SlotPanel)
 };

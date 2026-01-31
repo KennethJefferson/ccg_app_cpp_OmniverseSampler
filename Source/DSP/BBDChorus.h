@@ -50,6 +50,9 @@ public:
 
         for (int i = 0; i < numSamples; ++i)
         {
+            // Sanitize input
+            if (!std::isfinite(left[i])) left[i] = 0.0f;
+            if (!std::isfinite(right[i])) right[i] = 0.0f;
             // === LFO MODULATION ===
             float lfoL = static_cast<float>(std::sin(2.0 * 3.14159265359 * lfoPhaseL));
             float lfoR = static_cast<float>(std::sin(2.0 * 3.14159265359 * lfoPhaseR));
@@ -120,8 +123,12 @@ public:
             float expandedR = expand(delayedR);
 
             // === MIX ===
-            left[i] = left[i] * (1.0f - mix) + expandedL * mix;
-            right[i] = right[i] * (1.0f - mix) + expandedR * mix;
+            float outL = left[i] * (1.0f - mix) + expandedL * mix;
+            float outR = right[i] * (1.0f - mix) + expandedR * mix;
+
+            // Final sanitization
+            left[i] = std::isfinite(outL) ? outL : left[i];
+            right[i] = std::isfinite(outR) ? outR : right[i];
 
             // Advance write indices
             writeIndexL = (writeIndexL + 1) % static_cast<int>(delayBufferL.size());
@@ -153,6 +160,7 @@ private:
         float omega = 2.0f * 3.14159265359f * cutoffHz / static_cast<float>(sampleRate);
         float g = omega / (1.0f + omega);
         bbdLpfStateL = bbdLpfStateL + g * (input - bbdLpfStateL);
+        if (!std::isfinite(bbdLpfStateL)) bbdLpfStateL = 0.0f;
         return bbdLpfStateL;
     }
 
@@ -161,6 +169,7 @@ private:
         float omega = 2.0f * 3.14159265359f * cutoffHz / static_cast<float>(sampleRate);
         float g = omega / (1.0f + omega);
         bbdLpfStateR = bbdLpfStateR + g * (input - bbdLpfStateR);
+        if (!std::isfinite(bbdLpfStateR)) bbdLpfStateR = 0.0f;
         return bbdLpfStateR;
     }
 
@@ -170,6 +179,7 @@ private:
         float omega = 2.0f * 3.14159265359f * cutoffHz / static_cast<float>(sampleRate);
         float g = omega / (1.0f + omega);
         toneLpfStateL = toneLpfStateL + g * (input - toneLpfStateL);
+        if (!std::isfinite(toneLpfStateL)) toneLpfStateL = 0.0f;
         return toneLpfStateL;
     }
 
@@ -178,6 +188,7 @@ private:
         float omega = 2.0f * 3.14159265359f * cutoffHz / static_cast<float>(sampleRate);
         float g = omega / (1.0f + omega);
         toneLpfStateR = toneLpfStateR + g * (input - toneLpfStateR);
+        if (!std::isfinite(toneLpfStateR)) toneLpfStateR = 0.0f;
         return toneLpfStateR;
     }
 

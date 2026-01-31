@@ -44,6 +44,10 @@ public:
         if (delayBuffer.empty())
             return input;
 
+        // Sanitize input
+        if (!std::isfinite(input))
+            input = 0.0f;
+
         // === COMPANDING: Pre-compress input ===
         float compressedInput = compress(input);
 
@@ -103,12 +107,23 @@ public:
         // Compress feedback before writing back
         float toWrite = compressedInput + compress(feedbackSample);
 
+        // Sanitize and clamp to prevent runaway
+        if (!std::isfinite(toWrite))
+            toWrite = 0.0f;
+        toWrite = std::clamp(toWrite, -4.0f, 4.0f);
+
         // === WRITE TO DELAY LINE ===
         delayBuffer[writeIndex] = toWrite;
         writeIndex = (writeIndex + 1) % static_cast<int>(delayBuffer.size());
 
         // === MIX ===
-        return input * (1.0f - mix) + expandedOutput * mix;
+        float output = input * (1.0f - mix) + expandedOutput * mix;
+
+        // Final sanitization
+        if (!std::isfinite(output))
+            output = input;
+
+        return output;
     }
 
     void processBlock(float* left, float* right, int numSamples)
@@ -160,6 +175,11 @@ private:
         float g = omega / (1.0f + omega);
 
         bbdLpfState = bbdLpfState + g * (input - bbdLpfState);
+
+        // Protect filter state from corruption
+        if (!std::isfinite(bbdLpfState))
+            bbdLpfState = 0.0f;
+
         return bbdLpfState;
     }
 
@@ -170,6 +190,11 @@ private:
         float g = omega / (1.0f + omega);
 
         toneLpfState = toneLpfState + g * (input - toneLpfState);
+
+        // Protect filter state from corruption
+        if (!std::isfinite(toneLpfState))
+            toneLpfState = 0.0f;
+
         return toneLpfState;
     }
 

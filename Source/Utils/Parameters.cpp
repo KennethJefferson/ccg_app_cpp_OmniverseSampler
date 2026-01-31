@@ -121,6 +121,13 @@ namespace Parameters
                 juce::AudioParameterFloatAttributes().withLabel("%")
             ));
 
+            // Loop mode (for infinite playback)
+            params.push_back(std::make_unique<juce::AudioParameterBool>(
+                juce::ParameterID(slotLoop(i), 1),
+                slotPrefix + "Loop",
+                false
+            ));
+
             // Filter parameters (Phase 2 - registered now for APVTS completeness)
             params.push_back(std::make_unique<juce::AudioParameterChoice>(
                 juce::ParameterID(slotFilterType(i), 1),

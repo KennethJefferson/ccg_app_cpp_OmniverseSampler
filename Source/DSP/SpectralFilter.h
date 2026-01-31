@@ -34,6 +34,10 @@ public:
 
         for (int i = 0; i < numSamples; ++i)
         {
+            // Sanitize input
+            if (!std::isfinite(left[i])) left[i] = 0.0f;
+            if (!std::isfinite(right[i])) right[i] = 0.0f;
+
             float dryL = left[i];
             float dryR = right[i];
 
@@ -92,8 +96,12 @@ public:
             wetR = softLimit(wetR);
 
             // === MIX ===
-            left[i] = dryL * (1.0f - mix) + wetL * mix;
-            right[i] = dryR * (1.0f - mix) + wetR * mix;
+            float outL = dryL * (1.0f - mix) + wetL * mix;
+            float outR = dryR * (1.0f - mix) + wetR * mix;
+
+            // Final sanitization
+            left[i] = std::isfinite(outL) ? outL : dryL;
+            right[i] = std::isfinite(outR) ? outR : dryR;
         }
     }
 
@@ -109,6 +117,9 @@ private:
         lpfStateL1 = lpfStateL1 + g * (input - lpfStateL1);
         lpfStateL2 = lpfStateL2 + g * (lpfStateL1 - lpfStateL2);
 
+        if (!std::isfinite(lpfStateL1)) lpfStateL1 = 0.0f;
+        if (!std::isfinite(lpfStateL2)) lpfStateL2 = 0.0f;
+
         return lpfStateL2;
     }
 
@@ -119,6 +130,9 @@ private:
 
         lpfStateR1 = lpfStateR1 + g * (input - lpfStateR1);
         lpfStateR2 = lpfStateR2 + g * (lpfStateR1 - lpfStateR2);
+
+        if (!std::isfinite(lpfStateR1)) lpfStateR1 = 0.0f;
+        if (!std::isfinite(lpfStateR2)) lpfStateR2 = 0.0f;
 
         return lpfStateR2;
     }
@@ -132,6 +146,9 @@ private:
         hpfStateL1 = hpfStateL1 + g * (input - hpfStateL1);
         hpfStateL2 = hpfStateL2 + g * (hpfStateL1 - hpfStateL2);
 
+        if (!std::isfinite(hpfStateL1)) hpfStateL1 = 0.0f;
+        if (!std::isfinite(hpfStateL2)) hpfStateL2 = 0.0f;
+
         // High-pass = input - low-pass
         return input - hpfStateL2;
     }
@@ -143,6 +160,9 @@ private:
 
         hpfStateR1 = hpfStateR1 + g * (input - hpfStateR1);
         hpfStateR2 = hpfStateR2 + g * (hpfStateR1 - hpfStateR2);
+
+        if (!std::isfinite(hpfStateR1)) hpfStateR1 = 0.0f;
+        if (!std::isfinite(hpfStateR2)) hpfStateR2 = 0.0f;
 
         return input - hpfStateR2;
     }
