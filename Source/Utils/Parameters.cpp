@@ -154,7 +154,7 @@ namespace Parameters
             params.push_back(std::make_unique<juce::AudioParameterBool>(
                 juce::ParameterID(slotFilterBypass(i), 1),
                 slotPrefix + "Filter Bypass",
-                false
+                true
             ));
 
             // LFO parameters (Phase 2)
@@ -229,7 +229,7 @@ namespace Parameters
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             juce::ParameterID(DELAY_BYPASS, 1),
             "Delay Bypass",
-            false
+            true
         ));
 
         // BBD Chorus parameters
@@ -265,7 +265,7 @@ namespace Parameters
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             juce::ParameterID(CHORUS_BYPASS, 1),
             "Chorus Bypass",
-            false
+            true
         ));
 
         // Tape Saturation parameters
@@ -300,7 +300,7 @@ namespace Parameters
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             juce::ParameterID(TAPE_BYPASS, 1),
             "Tape Bypass",
-            false
+            true
         ));
 
         // Spectral Filter parameters
@@ -345,7 +345,7 @@ namespace Parameters
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             juce::ParameterID(SPECTRAL_BYPASS, 1),
             "Spectral Bypass",
-            false
+            true
         ));
 
         return { params.begin(), params.end() };

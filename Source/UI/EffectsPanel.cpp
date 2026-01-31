@@ -95,9 +95,10 @@ void DelaySection::resized()
 {
     auto bounds = getLocalBounds().reduced(10);
 
-    // Header
+    // Header with power button
     auto headerRow = bounds.removeFromTop(20);
     sectionLabel.setBounds(headerRow.removeFromLeft(50));
+    powerButton.setBounds(headerRow.removeFromRight(40).reduced(0, 1));
     titleLabel.setBounds(headerRow);
     bounds.removeFromTop(5);
 
@@ -133,9 +134,6 @@ void DelaySection::resized()
     auto mixRow = rightCol.removeFromTop(rowHeight);
     mixLabel.setBounds(mixRow.removeFromTop(12));
     mixSlider.setBounds(mixRow);
-
-    // Power button at bottom
-    powerButton.setBounds(leftCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // ChorusSection implementation
@@ -220,9 +218,10 @@ void ChorusSection::resized()
 {
     auto bounds = getLocalBounds().reduced(10);
 
-    // Header
+    // Header with power button
     auto headerRow = bounds.removeFromTop(20);
     sectionLabel.setBounds(headerRow.removeFromLeft(80));
+    powerButton.setBounds(headerRow.removeFromRight(40).reduced(0, 1));
     titleLabel.setBounds(headerRow);
     bounds.removeFromTop(5);
 
@@ -250,9 +249,6 @@ void ChorusSection::resized()
     auto mixRow = rightCol.removeFromTop(rowHeight);
     mixLabel.setBounds(mixRow.removeFromTop(12));
     mixSlider.setBounds(mixRow);
-
-    // Power button at bottom
-    powerButton.setBounds(leftCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // TapeSaturationSection implementation
@@ -336,9 +332,10 @@ void TapeSaturationSection::resized()
 {
     auto bounds = getLocalBounds().reduced(10);
 
-    // Header
+    // Header with power button
     auto headerRow = bounds.removeFromTop(20);
     sectionLabel.setBounds(headerRow.removeFromLeft(50));
+    powerButton.setBounds(headerRow.removeFromRight(40).reduced(0, 1));
     titleLabel.setBounds(headerRow);
     bounds.removeFromTop(5);
 
@@ -366,9 +363,6 @@ void TapeSaturationSection::resized()
     auto mixRow = rightCol.removeFromTop(rowHeight);
     mixLabel.setBounds(mixRow.removeFromTop(12));
     mixSlider.setBounds(mixRow);
-
-    // Power button at bottom
-    powerButton.setBounds(leftCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // SpectralFilterSection implementation
@@ -459,9 +453,10 @@ void SpectralFilterSection::resized()
 {
     auto bounds = getLocalBounds().reduced(10);
 
-    // Header
+    // Header with power button
     auto headerRow = bounds.removeFromTop(20);
     sectionLabel.setBounds(headerRow.removeFromLeft(60));
+    powerButton.setBounds(headerRow.removeFromRight(40).reduced(0, 1));
     titleLabel.setBounds(headerRow);
     bounds.removeFromTop(5);
 
@@ -493,9 +488,6 @@ void SpectralFilterSection::resized()
     auto mixRow = rightCol.removeFromTop(rowHeight);
     mixLabel.setBounds(mixRow.removeFromTop(11));
     mixSlider.setBounds(mixRow);
-
-    // Power button at bottom
-    powerButton.setBounds(rightCol.removeFromTop(25).removeFromLeft(50));
 }
 
 // EffectsPanel implementation

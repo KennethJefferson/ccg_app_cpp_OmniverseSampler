@@ -111,7 +111,10 @@ void SlotFilterPanel::resized()
 {
     auto bounds = getLocalBounds().reduced(10);
 
-    slotLabel.setBounds(bounds.removeFromTop(20));
+    // Header row with slot label and power button
+    auto headerRow = bounds.removeFromTop(20);
+    slotLabel.setBounds(headerRow.removeFromLeft(60));
+    powerButton.setBounds(headerRow.removeFromRight(40).reduced(0, 1));
     bounds.removeFromTop(5);
 
     // Filter section
@@ -130,9 +133,6 @@ void SlotFilterPanel::resized()
     resonanceLabel.setBounds(resRow.removeFromTop(12));
     resonanceSlider.setBounds(resRow);
     bounds.removeFromTop(3);
-
-    powerButton.setBounds(bounds.removeFromTop(22).removeFromLeft(50));
-    bounds.removeFromTop(8);
 
     // LFO section
     lfoLabel.setBounds(bounds.removeFromTop(15));
